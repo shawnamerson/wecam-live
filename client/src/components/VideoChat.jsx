@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-export function VideoChat({ localStream, remoteStream, status }) {
+export function VideoChat({ localStream, remoteStream, status, controls }) {
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
 
@@ -19,33 +19,46 @@ export function VideoChat({ localStream, remoteStream, status }) {
   }, [remoteStream]);
 
   return (
-    <div className="video-container">
-      {/* Remote video (large) */}
-      <div className="remote-video-wrapper">
-        {remoteStream ? (
-          <video
-            ref={remoteVideoRef}
-            className="remote-video"
-            autoPlay
-            playsInline
-          />
-        ) : (
-          <div className="video-placeholder">
-            <span className="status-text">{status}</span>
-          </div>
-        )}
+    <div className="video-layout">
+      {/* Remote video panel */}
+      <div className="video-panel remote-panel">
+        <div className="video-wrapper">
+          {remoteStream ? (
+            <video
+              ref={remoteVideoRef}
+              className="video-element"
+              autoPlay
+              playsInline
+            />
+          ) : (
+            <div className="video-placeholder">
+              <span className="status-text">{status}</span>
+            </div>
+          )}
+        </div>
+        <div className="controls-wrapper">
+          {controls}
+        </div>
       </div>
 
-      {/* Local video (small, corner) */}
-      {localStream && (
-        <video
-          ref={localVideoRef}
-          className="local-video"
-          autoPlay
-          playsInline
-          muted
-        />
-      )}
+      {/* Local video panel */}
+      <div className="video-panel local-panel">
+        <div className="video-wrapper">
+          {localStream ? (
+            <video
+              ref={localVideoRef}
+              className="video-element"
+              autoPlay
+              playsInline
+              muted
+            />
+          ) : (
+            <div className="video-placeholder">
+              <span className="status-text">Your camera</span>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

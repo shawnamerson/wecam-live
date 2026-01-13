@@ -137,14 +137,15 @@ function App() {
           localStream={localStream}
           remoteStream={remoteStream}
           status={status}
-        />
-
-        <Controls
-          isStarted={isStarted}
-          isConnected={connectionState === 'connected'}
-          onStart={handleStart}
-          onNext={handleNext}
-          onStop={handleStop}
+          controls={
+            <Controls
+              isStarted={isStarted}
+              isConnected={connectionState === 'connected'}
+              onStart={handleStart}
+              onNext={handleNext}
+              onStop={handleStop}
+            />
+          }
         />
       </main>
     </div>
