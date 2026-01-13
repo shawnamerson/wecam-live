@@ -1,26 +1,26 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 
-// Build ICE servers config - TURN servers needed for ~10-15% of users behind strict NATs
-const getIceServers = () => {
-  const servers = [
+// ICE servers config - STUN for most users, TURN for users behind strict NATs
+const ICE_SERVERS = {
+  iceServers: [
     { urls: 'stun:stun.l.google.com:19302' },
-    { urls: 'stun:stun1.l.google.com:19302' }
-  ];
-
-  // Add TURN server if configured (required for production)
-  const turnUrl = import.meta.env.VITE_TURN_URL;
-  const turnUsername = import.meta.env.VITE_TURN_USERNAME;
-  const turnCredential = import.meta.env.VITE_TURN_CREDENTIAL;
-
-  if (turnUrl && turnUsername && turnCredential) {
-    servers.push({
-      urls: turnUrl,
-      username: turnUsername,
-      credential: turnCredential
-    });
-  }
-
-  return { iceServers: servers };
+    { urls: 'stun:stun1.l.google.com:19302' },
+    {
+      urls: 'turn:openrelay.metered.ca:80',
+      username: 'openrelayproject',
+      credential: 'openrelayproject'
+    },
+    {
+      urls: 'turn:openrelay.metered.ca:443',
+      username: 'openrelayproject',
+      credential: 'openrelayproject'
+    },
+    {
+      urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+      username: 'openrelayproject',
+      credential: 'openrelayproject'
+    }
+  ]
 };
 
 export function useWebRTC(socket) {
@@ -56,7 +56,7 @@ export function useWebRTC(socket) {
 
   // Create new peer connection
   const createPeerConnection = useCallback((stream) => {
-    const pc = new RTCPeerConnection(getIceServers());
+    const pc = new RTCPeerConnection(ICE_SERVERS);
 
     // Add local tracks to connection
     stream.getTracks().forEach(track => {
