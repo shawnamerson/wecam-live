@@ -128,10 +128,6 @@ function App() {
 
   return (
     <div className="app">
-      <header className="header">
-        <h1>WeCam</h1>
-      </header>
-
       <main className="main">
         <VideoChat
           localStream={localStream}
