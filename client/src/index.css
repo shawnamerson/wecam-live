@@ -144,12 +144,12 @@ body {
 }
 
 .btn-stop {
-  background: #333;
+  background: #ef4444;
   color: #fff;
 }
 
 .btn-stop:hover {
-  background: #444;
+  background: #dc2626;
   transform: translateY(-2px);
 }
 
