@@ -18,19 +18,12 @@ body {
 }
 
 .user-count {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: rgba(0, 0, 0, 0.6);
-  border-radius: 20px;
+  padding: 0.5rem 0;
   font-size: 0.875rem;
-  color: #fff;
-  z-index: 100;
-  backdrop-filter: blur(4px);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 /* Controls positioning */
@@ -205,11 +198,15 @@ body {
     backdrop-filter: blur(4px);
   }
 
-  .remote-panel .user-count {
-    position: static;
-    background: none;
-    padding: 0;
-    backdrop-filter: none;
+  .remote-panel > .user-count {
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+    z-index: 10;
+    padding: 0.5rem 0.75rem;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 20px;
+    backdrop-filter: blur(4px);
   }
 
   .btn {

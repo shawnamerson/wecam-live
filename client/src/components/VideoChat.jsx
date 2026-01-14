@@ -22,6 +22,10 @@ export function VideoChat({ localStream, remoteStream, status, userCount, contro
     <div className="video-layout">
       {/* Remote video panel */}
       <div className="video-panel remote-panel">
+        <div className="user-count">
+          <span className="user-count-dot"></span>
+          {userCount} online
+        </div>
         <div className="video-wrapper">
           {remoteStream ? (
             <video
@@ -37,10 +41,6 @@ export function VideoChat({ localStream, remoteStream, status, userCount, contro
           )}
         </div>
         <div className="controls-wrapper">
-          <div className="user-count">
-            <span className="user-count-dot"></span>
-            {userCount} online
-          </div>
           {controls}
         </div>
       </div>
