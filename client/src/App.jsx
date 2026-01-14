@@ -10,6 +10,7 @@ function App() {
   const [socket, setSocket] = useState(null);
   const [isStarted, setIsStarted] = useState(false);
   const [status, setStatus] = useState('Click Start to begin');
+  const [userCount, setUserCount] = useState(0);
 
   const localStreamRef = useRef(null);
 
@@ -36,6 +37,10 @@ function App() {
 
     newSocket.on('disconnect', () => {
       console.log('Disconnected from server');
+    });
+
+    newSocket.on('user-count', (count) => {
+      setUserCount(count);
     });
 
     setSocket(newSocket);
@@ -128,6 +133,10 @@ function App() {
 
   return (
     <div className="app">
+      <div className="user-count">
+        <span className="user-count-dot"></span>
+        {userCount} online
+      </div>
       <main className="main">
         <VideoChat
           localStream={localStream}

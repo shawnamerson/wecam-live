@@ -38,8 +38,17 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', ...matchmaker.getStats() });
 });
 
+// Broadcast user count to all clients
+function broadcastUserCount() {
+  const count = io.engine.clientsCount;
+  io.emit('user-count', count);
+}
+
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
+
+  // Send current user count to all clients
+  broadcastUserCount();
 
   // User wants to find a partner
   socket.on('join', () => {
@@ -113,6 +122,8 @@ io.on('connection', (socket) => {
     if (partnerId) {
       io.to(partnerId).emit('partner-left');
     }
+    // Update user count for remaining clients
+    broadcastUserCount();
   });
 });
 
