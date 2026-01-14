@@ -33,6 +33,14 @@ body {
   backdrop-filter: blur(4px);
 }
 
+/* Controls positioning */
+.controls-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  align-items: center;
+}
+
 .user-count-dot {
   width: 8px;
   height: 8px;
@@ -100,12 +108,6 @@ body {
   color: #888;
   text-align: center;
   padding: 1rem;
-}
-
-/* Controls positioning */
-.controls-wrapper {
-  display: flex;
-  justify-content: center;
 }
 
 .controls {
@@ -196,11 +198,18 @@ body {
     z-index: 10;
   }
 
-  .remote-panel .controls {
+  .remote-panel .controls-wrapper {
     background: rgba(0, 0, 0, 0.6);
     padding: 0.75rem 1rem;
     border-radius: 8px;
     backdrop-filter: blur(4px);
+  }
+
+  .remote-panel .user-count {
+    position: static;
+    background: none;
+    padding: 0;
+    backdrop-filter: none;
   }
 
   .btn {

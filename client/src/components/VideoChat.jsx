@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-export function VideoChat({ localStream, remoteStream, status, controls }) {
+export function VideoChat({ localStream, remoteStream, status, userCount, controls }) {
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
 
@@ -37,6 +37,10 @@ export function VideoChat({ localStream, remoteStream, status, controls }) {
           )}
         </div>
         <div className="controls-wrapper">
+          <div className="user-count">
+            <span className="user-count-dot"></span>
+            {userCount} online
+          </div>
           {controls}
         </div>
       </div>

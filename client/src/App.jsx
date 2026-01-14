@@ -133,15 +133,12 @@ function App() {
 
   return (
     <div className="app">
-      <div className="user-count">
-        <span className="user-count-dot"></span>
-        {userCount} online
-      </div>
       <main className="main">
         <VideoChat
           localStream={localStream}
           remoteStream={remoteStream}
           status={status}
+          userCount={userCount}
           controls={
             <Controls
               isStarted={isStarted}
