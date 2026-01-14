@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { io } from 'socket.io-client';
+import { Analytics } from '@vercel/analytics/react';
 import { useWebRTC } from './hooks/useWebRTC';
 import { VideoChat } from './components/VideoChat';
 import { Controls } from './components/Controls';
@@ -150,6 +151,7 @@ function App() {
           }
         />
       </main>
+      <Analytics />
     </div>
   );
 }
