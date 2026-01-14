@@ -9,6 +9,16 @@ body {
   background: #1a1a2e;
   color: #fff;
   min-height: 100vh;
+  overflow: hidden;
+}
+
+/* Hide scrollbar for all browsers */
+::-webkit-scrollbar {
+  display: none;
+}
+
+html {
+  scrollbar-width: none;
 }
 
 .app {
