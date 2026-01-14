@@ -41,6 +41,10 @@ export function VideoChat({ localStream, remoteStream, status, userCount, contro
           )}
         </div>
         <div className="controls-wrapper">
+          <div className="user-count user-count-mobile">
+            <span className="user-count-dot"></span>
+            {userCount} online
+          </div>
           {controls}
         </div>
       </div>
