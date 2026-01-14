@@ -13,9 +13,15 @@ const allowedOrigins = [
   'http://127.0.0.1:5173'
 ];
 
-// Add production client URL if configured
+// Add production client URL if configured (supports both www and non-www)
 if (process.env.CLIENT_URL) {
   allowedOrigins.push(process.env.CLIENT_URL);
+  // Also allow www/non-www variant
+  if (process.env.CLIENT_URL.includes('://www.')) {
+    allowedOrigins.push(process.env.CLIENT_URL.replace('://www.', '://'));
+  } else {
+    allowedOrigins.push(process.env.CLIENT_URL.replace('://', '://www.'));
+  }
 }
 
 const io = new Server(server, {
