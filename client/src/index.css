@@ -134,12 +134,12 @@ body {
 }
 
 .btn-next {
-  background: #0f3460;
+  background: #3b82f6;
   color: #fff;
 }
 
 .btn-next:hover:not(:disabled) {
-  background: #1a4f8a;
+  background: #2563eb;
   transform: translateY(-2px);
 }
 
