@@ -124,12 +124,12 @@ body {
 }
 
 .btn-start {
-  background: #e94560;
+  background: #22c55e;
   color: #fff;
 }
 
 .btn-start:hover {
-  background: #ff6b6b;
+  background: #16a34a;
   transform: translateY(-2px);
 }
 
