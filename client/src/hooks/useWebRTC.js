@@ -63,22 +63,15 @@ export function useWebRTC(socket) {
     const newFacingMode = facingMode === 'user' ? 'environment' : 'user';
 
     try {
-      // Get new video stream with opposite facing mode
-      const newStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: newFacingMode },
-        audio: true
+      // Get new video stream with opposite facing mode (video only)
+      const newVideoStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { exact: newFacingMode } },
+        audio: false
       });
 
-      // Stop old video track
-      const oldVideoTrack = localStream.getVideoTracks()[0];
-      if (oldVideoTrack) {
-        oldVideoTrack.stop();
-      }
+      const newVideoTrack = newVideoStream.getVideoTracks()[0];
 
-      // Get the new video track
-      const newVideoTrack = newStream.getVideoTracks()[0];
-
-      // If we have an active peer connection, replace the track
+      // If we have an active peer connection, replace the video track
       if (peerConnection.current) {
         const sender = peerConnection.current.getSenders().find(s => s.track?.kind === 'video');
         if (sender) {
@@ -86,19 +79,18 @@ export function useWebRTC(socket) {
         }
       }
 
-      // Stop old audio track and use new one
-      const oldAudioTrack = localStream.getAudioTracks()[0];
-      if (oldAudioTrack) {
-        oldAudioTrack.stop();
+      // Stop old video track after new one is ready
+      const oldVideoTrack = localStream.getVideoTracks()[0];
+      if (oldVideoTrack) {
+        oldVideoTrack.stop();
       }
 
-      // Replace audio track in peer connection if connected
-      if (peerConnection.current) {
-        const audioSender = peerConnection.current.getSenders().find(s => s.track?.kind === 'audio');
-        const newAudioTrack = newStream.getAudioTracks()[0];
-        if (audioSender && newAudioTrack) {
-          await audioSender.replaceTrack(newAudioTrack);
-        }
+      // Create a new MediaStream with the new video track and existing audio track
+      const existingAudioTrack = localStream.getAudioTracks()[0];
+      const newStream = new MediaStream();
+      newStream.addTrack(newVideoTrack);
+      if (existingAudioTrack) {
+        newStream.addTrack(existingAudioTrack);
       }
 
       setLocalStream(newStream);
@@ -106,8 +98,43 @@ export function useWebRTC(socket) {
 
       return newStream;
     } catch (err) {
-      console.error('Failed to switch camera:', err);
-      throw err;
+      // If exact facingMode fails, try without exact constraint
+      console.warn('Exact facingMode failed, trying ideal:', err);
+      try {
+        const newVideoStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: newFacingMode } },
+          audio: false
+        });
+
+        const newVideoTrack = newVideoStream.getVideoTracks()[0];
+
+        if (peerConnection.current) {
+          const sender = peerConnection.current.getSenders().find(s => s.track?.kind === 'video');
+          if (sender) {
+            await sender.replaceTrack(newVideoTrack);
+          }
+        }
+
+        const oldVideoTrack = localStream.getVideoTracks()[0];
+        if (oldVideoTrack) {
+          oldVideoTrack.stop();
+        }
+
+        const existingAudioTrack = localStream.getAudioTracks()[0];
+        const newStream = new MediaStream();
+        newStream.addTrack(newVideoTrack);
+        if (existingAudioTrack) {
+          newStream.addTrack(existingAudioTrack);
+        }
+
+        setLocalStream(newStream);
+        setFacingMode(newFacingMode);
+
+        return newStream;
+      } catch (fallbackErr) {
+        console.error('Failed to switch camera:', fallbackErr);
+        throw fallbackErr;
+      }
     }
   }, [localStream, facingMode]);
 
