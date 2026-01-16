@@ -27,18 +27,20 @@ export function useWebRTC(socket) {
   const [localStream, setLocalStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
   const [connectionState, setConnectionState] = useState('idle'); // idle, connecting, connected
+  const [facingMode, setFacingMode] = useState('user'); // 'user' = front, 'environment' = rear
 
   const peerConnection = useRef(null);
   const partnerId = useRef(null);
 
   // Get user media (camera + mic)
-  const startLocalStream = useCallback(async () => {
+  const startLocalStream = useCallback(async (preferredFacingMode = 'user') => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
+        video: { facingMode: preferredFacingMode },
         audio: true
       });
       setLocalStream(stream);
+      setFacingMode(preferredFacingMode);
       return stream;
     } catch (err) {
       console.error('Failed to get local stream:', err);
@@ -53,6 +55,61 @@ export function useWebRTC(socket) {
       setLocalStream(null);
     }
   }, [localStream]);
+
+  // Switch between front and rear camera
+  const switchCamera = useCallback(async () => {
+    if (!localStream) return;
+
+    const newFacingMode = facingMode === 'user' ? 'environment' : 'user';
+
+    try {
+      // Get new video stream with opposite facing mode
+      const newStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: newFacingMode },
+        audio: true
+      });
+
+      // Stop old video track
+      const oldVideoTrack = localStream.getVideoTracks()[0];
+      if (oldVideoTrack) {
+        oldVideoTrack.stop();
+      }
+
+      // Get the new video track
+      const newVideoTrack = newStream.getVideoTracks()[0];
+
+      // If we have an active peer connection, replace the track
+      if (peerConnection.current) {
+        const sender = peerConnection.current.getSenders().find(s => s.track?.kind === 'video');
+        if (sender) {
+          await sender.replaceTrack(newVideoTrack);
+        }
+      }
+
+      // Stop old audio track and use new one
+      const oldAudioTrack = localStream.getAudioTracks()[0];
+      if (oldAudioTrack) {
+        oldAudioTrack.stop();
+      }
+
+      // Replace audio track in peer connection if connected
+      if (peerConnection.current) {
+        const audioSender = peerConnection.current.getSenders().find(s => s.track?.kind === 'audio');
+        const newAudioTrack = newStream.getAudioTracks()[0];
+        if (audioSender && newAudioTrack) {
+          await audioSender.replaceTrack(newAudioTrack);
+        }
+      }
+
+      setLocalStream(newStream);
+      setFacingMode(newFacingMode);
+
+      return newStream;
+    } catch (err) {
+      console.error('Failed to switch camera:', err);
+      throw err;
+    }
+  }, [localStream, facingMode]);
 
   // Create new peer connection
   const createPeerConnection = useCallback((stream) => {
@@ -164,8 +221,10 @@ export function useWebRTC(socket) {
     localStream,
     remoteStream,
     connectionState,
+    facingMode,
     startLocalStream,
     stopLocalStream,
+    switchCamera,
     createOffer,
     handleOffer,
     handleAnswer,

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-export function VideoChat({ localStream, remoteStream, status, userCount, controls }) {
+export function VideoChat({ localStream, remoteStream, status, userCount, controls, onSwitchCamera }) {
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
 
@@ -49,13 +49,28 @@ export function VideoChat({ localStream, remoteStream, status, userCount, contro
       <div className="video-panel local-panel">
         <div className="video-wrapper">
           {localStream ? (
-            <video
-              ref={localVideoRef}
-              className="video-element"
-              autoPlay
-              playsInline
-              muted
-            />
+            <>
+              <video
+                ref={localVideoRef}
+                className="video-element"
+                autoPlay
+                playsInline
+                muted
+              />
+              <button
+                className="btn-switch-camera"
+                onClick={onSwitchCamera}
+                aria-label="Switch camera"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M11 19H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/>
+                  <path d="M13 5h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-5"/>
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M18 22l-3-3 3-3"/>
+                  <path d="M6 2l3 3-3 3"/>
+                </svg>
+              </button>
+            </>
           ) : (
             <div className="video-placeholder">
               <span className="status-text">Your camera</span>

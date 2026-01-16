@@ -19,8 +19,10 @@ function App() {
     localStream,
     remoteStream,
     connectionState,
+    facingMode,
     startLocalStream,
     stopLocalStream,
+    switchCamera,
     createOffer,
     handleOffer,
     handleAnswer,
@@ -132,6 +134,18 @@ function App() {
     setStatus('Click Start to begin');
   }, [socket, closePeerConnection, stopLocalStream]);
 
+  // Handle camera switch
+  const handleSwitchCamera = useCallback(async () => {
+    try {
+      const newStream = await switchCamera();
+      if (newStream) {
+        localStreamRef.current = newStream;
+      }
+    } catch (err) {
+      console.error('Failed to switch camera:', err);
+    }
+  }, [switchCamera]);
+
   return (
     <div className="app">
       <main className="main">
@@ -140,6 +154,7 @@ function App() {
           remoteStream={remoteStream}
           status={status}
           userCount={userCount}
+          onSwitchCamera={handleSwitchCamera}
           controls={
             <Controls
               isStarted={isStarted}

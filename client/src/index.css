@@ -162,6 +162,35 @@ html {
   transform: translateY(-2px);
 }
 
+/* Switch camera button */
+.btn-switch-camera {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.btn-switch-camera:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: scale(1.1);
+}
+
+.btn-switch-camera svg {
+  width: 22px;
+  height: 22px;
+}
+
 /* Mobile layout */
 @media (max-width: 768px) {
   .main {
