@@ -4,14 +4,18 @@ export function VideoChat({ localStream, remoteStream, status, userCount, contro
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
 
+  // Generate a unique key when stream changes to force video element remount on iOS
+  const streamKey = localStream ? localStream.id : 'no-stream';
+
   // Attach local stream to video element
   useEffect(() => {
     if (localVideoRef.current && localStream) {
       localVideoRef.current.srcObject = localStream;
       // iOS Safari needs explicit play() after changing srcObject
-      localVideoRef.current.play().catch(() => {
-        // Ignore autoplay errors - user will see video when they interact
-      });
+      const playPromise = localVideoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {});
+      }
     }
   }, [localStream]);
 
@@ -56,12 +60,12 @@ export function VideoChat({ localStream, remoteStream, status, userCount, contro
           {localStream ? (
             <>
               <video
+                key={streamKey}
                 ref={localVideoRef}
                 className="video-element"
                 autoPlay
                 playsInline
                 muted
-                webkit-playsinline="true"
               />
               <button
                 className="btn-switch-camera"
