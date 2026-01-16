@@ -61,6 +61,7 @@ export function VideoChat({ localStream, remoteStream, status, userCount, contro
                 autoPlay
                 playsInline
                 muted
+                webkit-playsinline="true"
               />
               <button
                 className="btn-switch-camera"

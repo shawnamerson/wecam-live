@@ -62,80 +62,55 @@ export function useWebRTC(socket) {
 
     const newFacingMode = facingMode === 'user' ? 'environment' : 'user';
 
-    try {
-      // Get new video stream with opposite facing mode (video only)
-      const newVideoStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { exact: newFacingMode } },
-        audio: false
-      });
+    // Try different constraint styles for iOS compatibility
+    const constraints = [
+      { video: { facingMode: { exact: newFacingMode } }, audio: false },
+      { video: { facingMode: newFacingMode }, audio: false },
+      { video: { facingMode: { ideal: newFacingMode } }, audio: false }
+    ];
 
-      const newVideoTrack = newVideoStream.getVideoTracks()[0];
+    let newVideoTrack = null;
 
-      // If we have an active peer connection, replace the video track
-      if (peerConnection.current) {
-        const sender = peerConnection.current.getSenders().find(s => s.track?.kind === 'video');
-        if (sender) {
-          await sender.replaceTrack(newVideoTrack);
-        }
-      }
-
-      // Stop old video track after new one is ready
-      const oldVideoTrack = localStream.getVideoTracks()[0];
-      if (oldVideoTrack) {
-        oldVideoTrack.stop();
-      }
-
-      // Create a new MediaStream with the new video track and existing audio track
-      const existingAudioTrack = localStream.getAudioTracks()[0];
-      const newStream = new MediaStream();
-      newStream.addTrack(newVideoTrack);
-      if (existingAudioTrack) {
-        newStream.addTrack(existingAudioTrack);
-      }
-
-      setLocalStream(newStream);
-      setFacingMode(newFacingMode);
-
-      return newStream;
-    } catch (err) {
-      // If exact facingMode fails, try without exact constraint
-      console.warn('Exact facingMode failed, trying ideal:', err);
+    for (const constraint of constraints) {
       try {
-        const newVideoStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { ideal: newFacingMode } },
-          audio: false
-        });
-
-        const newVideoTrack = newVideoStream.getVideoTracks()[0];
-
-        if (peerConnection.current) {
-          const sender = peerConnection.current.getSenders().find(s => s.track?.kind === 'video');
-          if (sender) {
-            await sender.replaceTrack(newVideoTrack);
-          }
-        }
-
-        const oldVideoTrack = localStream.getVideoTracks()[0];
-        if (oldVideoTrack) {
-          oldVideoTrack.stop();
-        }
-
-        const existingAudioTrack = localStream.getAudioTracks()[0];
-        const newStream = new MediaStream();
-        newStream.addTrack(newVideoTrack);
-        if (existingAudioTrack) {
-          newStream.addTrack(existingAudioTrack);
-        }
-
-        setLocalStream(newStream);
-        setFacingMode(newFacingMode);
-
-        return newStream;
-      } catch (fallbackErr) {
-        console.error('Failed to switch camera:', fallbackErr);
-        throw fallbackErr;
+        const newVideoStream = await navigator.mediaDevices.getUserMedia(constraint);
+        newVideoTrack = newVideoStream.getVideoTracks()[0];
+        break;
+      } catch (err) {
+        console.warn('Constraint failed:', constraint, err);
       }
     }
+
+    if (!newVideoTrack) {
+      console.error('Failed to get new camera with any constraint');
+      return;
+    }
+
+    // Get old video track
+    const oldVideoTrack = localStream.getVideoTracks()[0];
+
+    // Replace track in peer connection if connected
+    if (peerConnection.current) {
+      const sender = peerConnection.current.getSenders().find(s => s.track?.kind === 'video');
+      if (sender) {
+        await sender.replaceTrack(newVideoTrack);
+      }
+    }
+
+    // Replace track in the existing MediaStream (keeps same reference for iOS)
+    if (oldVideoTrack) {
+      localStream.removeTrack(oldVideoTrack);
+      oldVideoTrack.stop();
+    }
+    localStream.addTrack(newVideoTrack);
+
+    // Force React to re-render by setting a new stream reference
+    // but clone from the modified stream to keep tracks
+    const updatedStream = new MediaStream(localStream.getTracks());
+    setLocalStream(updatedStream);
+    setFacingMode(newFacingMode);
+
+    return updatedStream;
   }, [localStream, facingMode]);
 
   // Create new peer connection
