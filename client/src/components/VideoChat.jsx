@@ -8,6 +8,10 @@ export function VideoChat({ localStream, remoteStream, status, userCount, contro
   useEffect(() => {
     if (localVideoRef.current && localStream) {
       localVideoRef.current.srcObject = localStream;
+      // iOS Safari needs explicit play() after changing srcObject
+      localVideoRef.current.play().catch(() => {
+        // Ignore autoplay errors - user will see video when they interact
+      });
     }
   }, [localStream]);
 
@@ -15,6 +19,7 @@ export function VideoChat({ localStream, remoteStream, status, userCount, contro
   useEffect(() => {
     if (remoteVideoRef.current && remoteStream) {
       remoteVideoRef.current.srcObject = remoteStream;
+      remoteVideoRef.current.play().catch(() => {});
     }
   }, [remoteStream]);
 
