@@ -62,14 +62,12 @@ export function useWebRTC(socket) {
 
     const newFacingMode = facingMode === 'user' ? 'environment' : 'user';
 
-    // Stop all existing tracks first
-    localStream.getTracks().forEach(track => track.stop());
-
-    // Get completely fresh stream with new facing mode
+    // Try to get new stream FIRST, before stopping old one
     const constraints = [
       { video: { facingMode: { exact: newFacingMode } }, audio: true },
       { video: { facingMode: newFacingMode }, audio: true },
-      { video: { facingMode: { ideal: newFacingMode } }, audio: true }
+      { video: { facingMode: { ideal: newFacingMode } }, audio: true },
+      { video: true, audio: true } // Last resort: any camera
     ];
 
     let newStream = null;
@@ -77,20 +75,21 @@ export function useWebRTC(socket) {
     for (const constraint of constraints) {
       try {
         newStream = await navigator.mediaDevices.getUserMedia(constraint);
+        console.log('Got stream with constraint:', constraint);
         break;
       } catch (err) {
-        console.warn('Constraint failed:', constraint, err);
+        console.warn('Constraint failed:', constraint, err.message);
       }
     }
 
     if (!newStream) {
-      // Fallback: try to restore original camera
-      console.error('Failed to switch camera, restoring original');
-      newStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: facingMode },
-        audio: true
-      });
+      // Complete failure - keep existing stream
+      console.error('Failed to switch camera, keeping current stream');
+      return localStream;
     }
+
+    // Success! Now stop old tracks
+    localStream.getTracks().forEach(track => track.stop());
 
     // Replace tracks in peer connection if connected
     if (peerConnection.current) {
