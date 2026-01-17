@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-export function VideoChat({ localStream, remoteStream, status, userCount, controls, onSwitchCamera }) {
+export function VideoChat({ localStream, remoteStream, status, userCount, controls, onSwitchCamera, canSwitchCamera }) {
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
 
@@ -8,6 +8,9 @@ export function VideoChat({ localStream, remoteStream, status, userCount, contro
   useEffect(() => {
     const video = localVideoRef.current;
     if (video && localStream) {
+      // iOS Safari fix: reset srcObject before setting new stream
+      video.srcObject = null;
+      video.load();
       video.srcObject = localStream;
       // iOS Safari needs explicit play() after changing srcObject
       video.play().catch(() => {});
@@ -61,19 +64,21 @@ export function VideoChat({ localStream, remoteStream, status, userCount, contro
                 playsInline
                 muted
               />
-              <button
-                className="btn-switch-camera"
-                onClick={onSwitchCamera}
-                aria-label="Switch camera"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M11 19H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/>
-                  <path d="M13 5h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-5"/>
-                  <circle cx="12" cy="12" r="3"/>
-                  <path d="M18 22l-3-3 3-3"/>
-                  <path d="M6 2l3 3-3 3"/>
-                </svg>
-              </button>
+              {canSwitchCamera && (
+                <button
+                  className="btn-switch-camera"
+                  onClick={onSwitchCamera}
+                  aria-label="Switch camera"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M11 19H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/>
+                    <path d="M13 5h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-5"/>
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M18 22l-3-3 3-3"/>
+                    <path d="M6 2l3 3-3 3"/>
+                  </svg>
+                </button>
+              )}
             </>
           ) : (
             <div className="video-placeholder">

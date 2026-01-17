@@ -19,7 +19,7 @@ function App() {
     localStream,
     remoteStream,
     connectionState,
-    facingMode,
+    availableCameras,
     startLocalStream,
     stopLocalStream,
     switchCamera,
@@ -155,6 +155,7 @@ function App() {
           status={status}
           userCount={userCount}
           onSwitchCamera={handleSwitchCamera}
+          canSwitchCamera={availableCameras.length > 1}
           controls={
             <Controls
               isStarted={isStarted}

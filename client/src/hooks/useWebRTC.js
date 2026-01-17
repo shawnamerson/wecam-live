@@ -27,132 +27,131 @@ export function useWebRTC(socket) {
   const [localStream, setLocalStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
   const [connectionState, setConnectionState] = useState('idle'); // idle, connecting, connected
-  const [facingMode, setFacingMode] = useState('user'); // 'user' = front, 'environment' = rear
+  const [availableCameras, setAvailableCameras] = useState([]);
+  const [currentCameraIndex, setCurrentCameraIndex] = useState(0);
 
   const peerConnection = useRef(null);
   const partnerId = useRef(null);
+  const streamRef = useRef(null);
+
+  // Get user media with optional specific camera
+  const getUserMediaWithCamera = useCallback(async (deviceId) => {
+    const constraints = {
+      video: deviceId ? { deviceId: { exact: deviceId } } : true,
+      audio: true
+    };
+
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+
+    // Enumerate cameras after getting permission
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    let cameras = devices.filter(device =>
+      device.kind === 'videoinput' && device.label && device.label.trim() !== ''
+    );
+
+    // On iOS, simplify to just front/back (iPhone exposes multiple rear cameras)
+    const hasFrontLabel = cameras.some(c =>
+      c.label.toLowerCase().includes('front') ||
+      c.label.toLowerCase().includes('user')
+    );
+    const hasBackLabel = cameras.some(c =>
+      c.label.toLowerCase().includes('back') ||
+      c.label.toLowerCase().includes('rear') ||
+      c.label.toLowerCase().includes('environment')
+    );
+
+    // If we have both front and back cameras, filter to just one of each
+    if (cameras.length > 2 && hasFrontLabel && hasBackLabel) {
+      const front = cameras.find(c =>
+        c.label.toLowerCase().includes('front') ||
+        c.label.toLowerCase().includes('user')
+      );
+      const back = cameras.find(c =>
+        (c.label.toLowerCase().includes('back') ||
+         c.label.toLowerCase().includes('rear') ||
+         c.label.toLowerCase().includes('environment')) &&
+        !c.label.toLowerCase().includes('ultra') &&
+        !c.label.toLowerCase().includes('telephoto')
+      ) || cameras.find(c =>
+        c.label.toLowerCase().includes('back') ||
+        c.label.toLowerCase().includes('rear') ||
+        c.label.toLowerCase().includes('environment')
+      );
+
+      if (front && back) {
+        cameras = [front, back];
+      }
+    }
+
+    console.log('Available cameras:', cameras.map(c => ({ id: c.deviceId, label: c.label })));
+    setAvailableCameras(cameras);
+
+    return stream;
+  }, []);
 
   // Get user media (camera + mic)
-  const startLocalStream = useCallback(async (preferredFacingMode = 'user') => {
+  const startLocalStream = useCallback(async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: preferredFacingMode },
-        audio: true
-      });
+      const stream = await getUserMediaWithCamera();
+      streamRef.current = stream;
       setLocalStream(stream);
-      setFacingMode(preferredFacingMode);
       return stream;
     } catch (err) {
       console.error('Failed to get local stream:', err);
       throw err;
     }
-  }, []);
+  }, [getUserMediaWithCamera]);
 
   // Stop local stream
   const stopLocalStream = useCallback(() => {
-    if (localStream) {
-      localStream.getTracks().forEach(track => track.stop());
-      setLocalStream(null);
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
     }
-  }, [localStream]);
+    setLocalStream(null);
+  }, []);
 
   // Switch between front and rear camera
   const switchCamera = useCallback(async () => {
-    if (!localStream) return;
-
-    const oldVideoTrack = localStream.getVideoTracks()[0];
-    const audioTrack = localStream.getAudioTracks()[0];
-
-    // Get current device ID
-    const currentDeviceId = oldVideoTrack?.getSettings()?.deviceId;
-
-    // Stop old video track first (required on iOS)
-    if (oldVideoTrack) {
-      oldVideoTrack.stop();
+    if (availableCameras.length <= 1) {
+      console.log('Only one camera available, cannot switch');
+      return;
     }
 
     try {
-      // Get list of all video devices
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      const videoDevices = devices.filter(d => d.kind === 'videoinput');
-
-      console.log('Available cameras:', videoDevices.length);
-
-      let newVideoTrack = null;
-
-      if (videoDevices.length > 1) {
-        // Find a different camera than the current one
-        const otherCamera = videoDevices.find(d => d.deviceId !== currentDeviceId);
-
-        if (otherCamera) {
-          console.log('Switching to device:', otherCamera.label || otherCamera.deviceId);
-          const stream = await navigator.mediaDevices.getUserMedia({
-            video: { deviceId: { exact: otherCamera.deviceId } },
-            audio: false
-          });
-          newVideoTrack = stream.getVideoTracks()[0];
-        }
+      // Stop all tracks in current stream
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
       }
 
-      // Fallback: just get any video if device switch failed
-      if (!newVideoTrack) {
-        console.log('Fallback: requesting any camera');
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: false
-        });
-        newVideoTrack = stream.getVideoTracks()[0];
-      }
+      // Get next camera using index
+      const nextIndex = (currentCameraIndex + 1) % availableCameras.length;
+      setCurrentCameraIndex(nextIndex);
+      const nextCamera = availableCameras[nextIndex];
 
-      // Build new stream with new video + existing audio
-      const newStream = new MediaStream();
-      newStream.addTrack(newVideoTrack);
-      if (audioTrack) {
-        newStream.addTrack(audioTrack);
-      }
+      console.log('Switching to camera:', nextCamera.label || nextCamera.deviceId);
 
-      // Replace video track in peer connection if connected
+      // Get completely fresh stream with selected camera
+      const stream = await getUserMediaWithCamera(nextCamera.deviceId);
+      streamRef.current = stream;
+
+      // Update peer connection if we're in a call
       if (peerConnection.current) {
         const videoSender = peerConnection.current.getSenders().find(s => s.track?.kind === 'video');
-        if (videoSender) {
+        const newVideoTrack = stream.getVideoTracks()[0];
+        if (videoSender && newVideoTrack) {
           await videoSender.replaceTrack(newVideoTrack);
         }
       }
 
-      // Update facing mode based on new track settings
-      const newSettings = newVideoTrack.getSettings();
-      if (newSettings.facingMode) {
-        setFacingMode(newSettings.facingMode);
-      }
-
-      setLocalStream(newStream);
-      return newStream;
+      setLocalStream(stream);
+      return stream;
 
     } catch (err) {
       console.error('Switch camera failed:', err);
-
-      // Try to restore any camera
-      try {
-        const restored = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: false
-        });
-        const restoredTrack = restored.getVideoTracks()[0];
-
-        const newStream = new MediaStream();
-        newStream.addTrack(restoredTrack);
-        if (audioTrack) {
-          newStream.addTrack(audioTrack);
-        }
-
-        setLocalStream(newStream);
-        return newStream;
-      } catch (e) {
-        console.error('Could not restore camera:', e);
-        return null;
-      }
+      return null;
     }
-  }, [localStream]);
+  }, [availableCameras, currentCameraIndex, getUserMediaWithCamera]);
 
   // Create new peer connection
   const createPeerConnection = useCallback((stream) => {
@@ -264,7 +263,7 @@ export function useWebRTC(socket) {
     localStream,
     remoteStream,
     connectionState,
-    facingMode,
+    availableCameras,
     startLocalStream,
     stopLocalStream,
     switchCamera,
