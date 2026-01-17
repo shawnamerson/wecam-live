@@ -193,11 +193,13 @@ export function useWebRTC(socket) {
   }, [socket]);
 
   // Create and send offer
-  const createOffer = useCallback(async (stream, targetId) => {
+  const createOffer = useCallback(async (targetId) => {
+    if (!streamRef.current) return;
+
     partnerId.current = targetId;
     setConnectionState('connecting');
 
-    const pc = createPeerConnection(stream);
+    const pc = createPeerConnection(streamRef.current);
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
 
@@ -205,11 +207,13 @@ export function useWebRTC(socket) {
   }, [socket, createPeerConnection]);
 
   // Handle incoming offer and send answer
-  const handleOffer = useCallback(async (offer, fromId, stream) => {
+  const handleOffer = useCallback(async (offer, fromId) => {
+    if (!streamRef.current) return;
+
     partnerId.current = fromId;
     setConnectionState('connecting');
 
-    const pc = createPeerConnection(stream);
+    const pc = createPeerConnection(streamRef.current);
     await pc.setRemoteDescription(new RTCSessionDescription(offer));
 
     const answer = await pc.createAnswer();

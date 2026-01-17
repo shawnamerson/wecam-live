@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { io } from 'socket.io-client';
 import { Analytics } from '@vercel/analytics/react';
 import { useWebRTC } from './hooks/useWebRTC';
@@ -12,8 +12,6 @@ function App() {
   const [isStarted, setIsStarted] = useState(false);
   const [status, setStatus] = useState('Click Start to begin');
   const [userCount, setUserCount] = useState(0);
-
-  const localStreamRef = useRef(null);
 
   const {
     localStream,
@@ -65,16 +63,14 @@ function App() {
     // Matched with partner
     socket.on('matched', async ({ partnerId, initiator }) => {
       setStatus('Connected! Say hi!');
-      if (initiator && localStreamRef.current) {
-        await createOffer(localStreamRef.current, partnerId);
+      if (initiator) {
+        await createOffer(partnerId);
       }
     });
 
     // Received offer
     socket.on('offer', async ({ offer, from }) => {
-      if (localStreamRef.current) {
-        await handleOffer(offer, from, localStreamRef.current);
-      }
+      await handleOffer(offer, from);
     });
 
     // Received answer
@@ -107,8 +103,7 @@ function App() {
   // Handle Start button
   const handleStart = useCallback(async () => {
     try {
-      const stream = await startLocalStream();
-      localStreamRef.current = stream;
+      await startLocalStream();
       setIsStarted(true);
       setStatus('Waiting for a partner...');
       socket?.emit('join');
@@ -129,7 +124,6 @@ function App() {
     socket?.emit('stop');
     closePeerConnection();
     stopLocalStream();
-    localStreamRef.current = null;
     setIsStarted(false);
     setStatus('Click Start to begin');
   }, [socket, closePeerConnection, stopLocalStream]);
@@ -137,10 +131,7 @@ function App() {
   // Handle camera switch
   const handleSwitchCamera = useCallback(async () => {
     try {
-      const newStream = await switchCamera();
-      if (newStream) {
-        localStreamRef.current = newStream;
-      }
+      await switchCamera();
     } catch (err) {
       console.error('Failed to switch camera:', err);
     }
