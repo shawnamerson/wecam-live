@@ -60,77 +60,99 @@ export function useWebRTC(socket) {
   const switchCamera = useCallback(async () => {
     if (!localStream) return;
 
-    const newFacingMode = facingMode === 'user' ? 'environment' : 'user';
     const oldVideoTrack = localStream.getVideoTracks()[0];
     const audioTrack = localStream.getAudioTracks()[0];
 
-    // On iOS, we must stop the old video track before requesting a new camera
+    // Get current device ID
+    const currentDeviceId = oldVideoTrack?.getSettings()?.deviceId;
+
+    // Stop old video track first (required on iOS)
     if (oldVideoTrack) {
       oldVideoTrack.stop();
     }
 
-    // Try to get new video track only (keep existing audio)
-    const constraints = [
-      { video: { facingMode: { exact: newFacingMode } }, audio: false },
-      { video: { facingMode: newFacingMode }, audio: false },
-      { video: true, audio: false } // Any camera as fallback
-    ];
+    try {
+      // Get list of all video devices
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter(d => d.kind === 'videoinput');
 
-    let newVideoTrack = null;
+      console.log('Available cameras:', videoDevices.length);
 
-    for (const constraint of constraints) {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia(constraint);
-        newVideoTrack = stream.getVideoTracks()[0];
-        if (newVideoTrack) {
-          console.log('Got video with constraint:', constraint);
-          break;
+      let newVideoTrack = null;
+
+      if (videoDevices.length > 1) {
+        // Find a different camera than the current one
+        const otherCamera = videoDevices.find(d => d.deviceId !== currentDeviceId);
+
+        if (otherCamera) {
+          console.log('Switching to device:', otherCamera.label || otherCamera.deviceId);
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: { deviceId: { exact: otherCamera.deviceId } },
+            audio: false
+          });
+          newVideoTrack = stream.getVideoTracks()[0];
         }
-      } catch (err) {
-        console.warn('Constraint failed:', constraint, err.message);
       }
-    }
 
-    if (!newVideoTrack) {
-      // Failed - try to restore original camera
-      console.error('Failed to switch, restoring original camera');
-      try {
-        const restored = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: facingMode },
+      // Fallback: just get any video if device switch failed
+      if (!newVideoTrack) {
+        console.log('Fallback: requesting any camera');
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
           audio: false
         });
-        newVideoTrack = restored.getVideoTracks()[0];
+        newVideoTrack = stream.getVideoTracks()[0];
+      }
+
+      // Build new stream with new video + existing audio
+      const newStream = new MediaStream();
+      newStream.addTrack(newVideoTrack);
+      if (audioTrack) {
+        newStream.addTrack(audioTrack);
+      }
+
+      // Replace video track in peer connection if connected
+      if (peerConnection.current) {
+        const videoSender = peerConnection.current.getSenders().find(s => s.track?.kind === 'video');
+        if (videoSender) {
+          await videoSender.replaceTrack(newVideoTrack);
+        }
+      }
+
+      // Update facing mode based on new track settings
+      const newSettings = newVideoTrack.getSettings();
+      if (newSettings.facingMode) {
+        setFacingMode(newSettings.facingMode);
+      }
+
+      setLocalStream(newStream);
+      return newStream;
+
+    } catch (err) {
+      console.error('Switch camera failed:', err);
+
+      // Try to restore any camera
+      try {
+        const restored = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: false
+        });
+        const restoredTrack = restored.getVideoTracks()[0];
+
+        const newStream = new MediaStream();
+        newStream.addTrack(restoredTrack);
+        if (audioTrack) {
+          newStream.addTrack(audioTrack);
+        }
+
+        setLocalStream(newStream);
+        return newStream;
       } catch (e) {
         console.error('Could not restore camera:', e);
         return null;
       }
     }
-
-    // Build new stream with new video + existing audio
-    const newStream = new MediaStream();
-    newStream.addTrack(newVideoTrack);
-    if (audioTrack) {
-      newStream.addTrack(audioTrack);
-    }
-
-    // Replace video track in peer connection if connected
-    if (peerConnection.current) {
-      const videoSender = peerConnection.current.getSenders().find(s => s.track?.kind === 'video');
-      if (videoSender) {
-        await videoSender.replaceTrack(newVideoTrack);
-      }
-    }
-
-    setLocalStream(newStream);
-    // Only update facingMode if we actually got a different camera
-    if (newVideoTrack.getSettings().facingMode) {
-      setFacingMode(newVideoTrack.getSettings().facingMode);
-    } else {
-      setFacingMode(newFacingMode);
-    }
-
-    return newStream;
-  }, [localStream, facingMode]);
+  }, [localStream]);
 
   // Create new peer connection
   const createPeerConnection = useCallback((stream) => {
