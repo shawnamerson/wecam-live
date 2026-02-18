@@ -26,6 +26,51 @@ html {
   min-height: 100vh;
 }
 
+/* Site header */
+.site-header {
+  text-align: center;
+  padding: 1.5rem 1rem 0.5rem;
+}
+
+.site-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.site-description {
+  max-width: 600px;
+  margin: 0.5rem auto 0;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.5;
+}
+
+/* Site footer */
+.site-footer {
+  text-align: center;
+  padding: 0.75rem 1rem;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.site-footer nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.footer-brand {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.footer-sep {
+  color: rgba(255, 255, 255, 0.2);
+}
+
 .user-count {
   display: flex;
   align-items: center;
@@ -193,6 +238,23 @@ html {
 
 /* Mobile layout */
 @media (max-width: 768px) {
+  .site-header {
+    padding: 0.75rem 1rem 0.25rem;
+  }
+
+  .site-header h1 {
+    font-size: 1.1rem;
+  }
+
+  .site-description {
+    font-size: 0.85rem;
+  }
+
+  .site-footer {
+    padding: 0.5rem;
+    font-size: 0.75rem;
+  }
+
   .main {
     padding: 0;
     align-items: stretch;

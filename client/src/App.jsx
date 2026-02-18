@@ -139,6 +139,14 @@ function App() {
 
   return (
     <div className="app">
+      <header className="site-header">
+        <h1>WeCam - Free Random Video Chat</h1>
+        {!isStarted && (
+          <p className="site-description">
+            Meet strangers worldwide with free random video chat. No signup, no downloads — just click Start and connect instantly. The best Omegle alternative for anonymous video conversations.
+          </p>
+        )}
+      </header>
       <main className="main">
         <VideoChat
           localStream={localStream}
@@ -158,6 +166,13 @@ function App() {
           }
         />
       </main>
+      <footer className="site-footer">
+        <nav aria-label="Footer navigation">
+          <span className="footer-brand">WeCam</span>
+          <span className="footer-sep">—</span>
+          <span>Free Omegle alternative for random video chat</span>
+        </nav>
+      </footer>
       <Analytics />
     </div>
   );
