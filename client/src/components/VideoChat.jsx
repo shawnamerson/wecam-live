@@ -28,7 +28,8 @@ export function VideoChat({ localStream, remoteStream, status, userCount, contro
   return (
     <div className="video-layout">
       {/* Remote video panel */}
-      <div className="video-panel remote-panel">
+      <section className="video-panel remote-panel" aria-labelledby="remote-video-heading">
+        <h2 id="remote-video-heading" className="sr-only">Partner Video</h2>
         <div className="video-wrapper">
           {remoteStream ? (
             <video
@@ -50,10 +51,11 @@ export function VideoChat({ localStream, remoteStream, status, userCount, contro
           </div>
           {controls}
         </div>
-      </div>
+      </section>
 
       {/* Local video panel */}
-      <div className="video-panel local-panel">
+      <section className="video-panel local-panel" aria-labelledby="local-video-heading">
+        <h2 id="local-video-heading" className="sr-only">Your Camera</h2>
         <div className="video-wrapper">
           {localStream ? (
             <>
@@ -86,7 +88,7 @@ export function VideoChat({ localStream, remoteStream, status, userCount, contro
             </div>
           )}
         </div>
-      </div>
+      </section>
     </div>
   );
 }
