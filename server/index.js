@@ -4,6 +4,9 @@ import { Server } from 'socket.io';
 import cors from 'cors';
 import compression from 'compression';
 import matchmaker from './matchmaker.js';
+import { authenticateSocket } from './auth.js';
+
+const AUTH_REQUIRED = process.env.AUTH_REQUIRED === 'true';
 
 const app = express();
 const server = createServer(app);
@@ -46,8 +49,18 @@ function broadcastUserCount() {
   io.emit('user-count', count);
 }
 
-io.on('connection', (socket) => {
-  console.log(`User connected: ${socket.id}`);
+io.on('connection', async (socket) => {
+  // Authenticate user (returns userInfo or null for anonymous)
+  const userInfo = await authenticateSocket(socket);
+  const displayName = userInfo?.email || 'Anonymous';
+  console.log(`User connected: ${socket.id} (${displayName})`);
+
+  // If auth is required and user is not authenticated, disconnect
+  if (AUTH_REQUIRED && !userInfo) {
+    socket.emit('auth-error', { message: 'Authentication required' });
+    socket.disconnect(true);
+    return;
+  }
 
   // Send current user count to all clients
   broadcastUserCount();
@@ -55,7 +68,7 @@ io.on('connection', (socket) => {
   // User wants to find a partner
   socket.on('join', () => {
     console.log(`User ${socket.id} joining queue`);
-    const partnerId = matchmaker.findMatch(socket.id);
+    const partnerId = matchmaker.findMatch(socket.id, userInfo);
 
     if (partnerId) {
       console.log(`Matched: ${socket.id} <-> ${partnerId}`);
@@ -97,7 +110,7 @@ io.on('connection', (socket) => {
     }
 
     // Try to find new match
-    const newPartnerId = matchmaker.findMatch(socket.id);
+    const newPartnerId = matchmaker.findMatch(socket.id, userInfo);
 
     if (newPartnerId) {
       console.log(`New match: ${socket.id} <-> ${newPartnerId}`);

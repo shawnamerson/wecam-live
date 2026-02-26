@@ -1,4 +1,5 @@
 import { Link, Outlet } from 'react-router-dom';
+import { AuthStatus } from './AuthStatus';
 
 export function Layout() {
   return (
@@ -11,6 +12,7 @@ export function Layout() {
             <Link to="/faq">FAQ</Link>
             <Link to="/blog">Blog</Link>
           </div>
+          <AuthStatus />
         </div>
       </nav>
       <Outlet />

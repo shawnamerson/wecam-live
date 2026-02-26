@@ -4,9 +4,11 @@
   "type": "module",
   "main": "index.js",
   "dependencies": {
+    "@supabase/supabase-js": "^2.98.0",
     "compression": "^1.8.1",
     "cors": "^2.8.5",
     "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.3",
     "socket.io": "^4.7.2"
   }
 }

@@ -12,6 +12,8 @@ const BlogIndex = lazy(() => import('./pages/blog/BlogIndex'));
 const OmegleAlternatives = lazy(() => import('./pages/blog/OmegleAlternatives'));
 const VideoSafety = lazy(() => import('./pages/blog/VideoSafety'));
 const WhatHappenedToOmegle = lazy(() => import('./pages/blog/WhatHappenedToOmegle'));
+const Login = lazy(() => import('./pages/Login'));
+const SignUp = lazy(() => import('./pages/SignUp'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 function App() {
@@ -29,6 +31,8 @@ function App() {
             <Route path="/blog/best-omegle-alternatives-2026" element={<OmegleAlternatives />} />
             <Route path="/blog/video-chat-safety-tips" element={<VideoSafety />} />
             <Route path="/blog/what-happened-to-omegle" element={<WhatHappenedToOmegle />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

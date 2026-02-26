@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { useWebRTC } from '../hooks/useWebRTC';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { useAuth } from '../contexts/AuthContext';
 import { VideoChat } from '../components/VideoChat';
 import { Controls } from '../components/Controls';
 
@@ -13,6 +14,9 @@ export default function Home() {
     description: 'WeCam is the best free Omegle alternative for random video chat. Meet strangers instantly, no signup required. Chat with people worldwide in seconds.',
     path: '/'
   });
+
+  const { session, user } = useAuth();
+  const lastUserIdRef = useRef(undefined);
 
   const [socket, setSocket] = useState(null);
   const [isStarted, setIsStarted] = useState(false);
@@ -34,9 +38,17 @@ export default function Home() {
     closePeerConnection
   } = useWebRTC(socket);
 
-  // Initialize socket connection
+  // Initialize socket connection — reconnect only on login/logout (user ID change)
+  const currentUserId = user?.id ?? null;
   useEffect(() => {
-    const newSocket = io(SERVER_URL);
+    if (lastUserIdRef.current === currentUserId && socket) return;
+    lastUserIdRef.current = currentUserId;
+
+    // Close previous socket if switching users
+    if (socket) socket.close();
+
+    const token = session?.access_token ?? null;
+    const newSocket = io(SERVER_URL, { auth: { token } });
 
     newSocket.on('connect', () => {
       console.log('Connected to server');
@@ -55,7 +67,7 @@ export default function Home() {
     return () => {
       newSocket.close();
     };
-  }, []);
+  }, [currentUserId]);
 
   // Set up socket event listeners
   useEffect(() => {

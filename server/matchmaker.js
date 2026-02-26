@@ -2,43 +2,50 @@
 
 class Matchmaker {
   constructor() {
-    this.waitingQueue = [];
+    this.waitingQueue = []; // { socketId, userInfo }
     this.pairs = new Map(); // socketId -> partnerSocketId
+    this.userMeta = new Map(); // socketId -> userInfo
   }
 
   // Add user to waiting queue
-  addToQueue(socketId) {
-    if (!this.waitingQueue.includes(socketId) && !this.pairs.has(socketId)) {
-      this.waitingQueue.push(socketId);
+  addToQueue(socketId, userInfo) {
+    const inQueue = this.waitingQueue.some(entry => entry.socketId === socketId);
+    if (!inQueue && !this.pairs.has(socketId)) {
+      this.waitingQueue.push({ socketId, userInfo: userInfo || null });
     }
   }
 
   // Remove user from queue
   removeFromQueue(socketId) {
-    const index = this.waitingQueue.indexOf(socketId);
+    const index = this.waitingQueue.findIndex(entry => entry.socketId === socketId);
     if (index > -1) {
       this.waitingQueue.splice(index, 1);
     }
   }
 
   // Try to find a match for a user
-  findMatch(socketId) {
+  findMatch(socketId, userInfo) {
+    // Store user meta
+    if (userInfo) {
+      this.userMeta.set(socketId, userInfo);
+    }
+
     // Remove self from queue if present
     this.removeFromQueue(socketId);
 
     // Find first available user in queue
     if (this.waitingQueue.length > 0) {
-      const partnerId = this.waitingQueue.shift();
+      const partner = this.waitingQueue.shift();
 
       // Create the pair
-      this.pairs.set(socketId, partnerId);
-      this.pairs.set(partnerId, socketId);
+      this.pairs.set(socketId, partner.socketId);
+      this.pairs.set(partner.socketId, socketId);
 
-      return partnerId;
+      return partner.socketId;
     }
 
     // No match found, add to queue
-    this.addToQueue(socketId);
+    this.addToQueue(socketId, userInfo);
     return null;
   }
 
@@ -61,7 +68,13 @@ class Matchmaker {
   // Full cleanup when user disconnects
   removeUser(socketId) {
     this.removeFromQueue(socketId);
+    this.userMeta.delete(socketId);
     return this.breakPair(socketId);
+  }
+
+  // Get user meta
+  getUserMeta(socketId) {
+    return this.userMeta.get(socketId) || null;
   }
 
   // Get stats
