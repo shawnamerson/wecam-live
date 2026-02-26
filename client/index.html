@@ -83,9 +83,147 @@
       "logo": "https://wecam.live/og-image.png"
     }
     </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is WeCam?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "WeCam is a free random video chat platform and the best Omegle alternative. It connects you with strangers worldwide for instant face-to-face conversations, with no signup or downloads required."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is WeCam free to use?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, WeCam is completely free. There are no hidden fees, subscriptions, or premium tiers. All features including random video chat, camera switching, and unlimited conversations are available at no cost."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do I need to sign up or create an account?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No, WeCam requires no signup, registration, or account creation. Simply visit wecam.live, allow camera access, and click Start to begin chatting with strangers instantly."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is WeCam safe to use?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "WeCam uses peer-to-peer WebRTC connections for video chat, meaning video streams go directly between users without passing through our servers. No personal information is collected or stored. You can skip any conversation instantly by clicking Next."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What happened to Omegle?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Omegle shut down in November 2023 after 14 years of operation. WeCam is a modern alternative that provides the same random video chat experience with a clean interface, no downloads, and instant connections."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What do I need to use WeCam?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "You need a device with a camera and microphone (computer, phone, or tablet) and a modern web browser that supports WebRTC, such as Chrome, Firefox, Safari, or Edge. No additional software or plugins are required."
+          }
+        }
+      ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "VideoObject",
+      "name": "WeCam - Random Video Chat with Strangers",
+      "description": "Experience free random video chat on WeCam, the best Omegle alternative. Connect with strangers worldwide instantly - no signup, no downloads. Just click Start and begin a face-to-face conversation.",
+      "thumbnailUrl": "https://wecam.live/og-image.png",
+      "uploadDate": "2026-02-18",
+      "contentUrl": "https://wecam.live/",
+      "embedUrl": "https://wecam.live/",
+      "interactionStatistic": {
+        "@type": "InteractionCounter",
+        "interactionType": { "@type": "WatchAction" },
+        "userInteractionCount": 0
+      },
+      "publication": {
+        "@type": "BroadcastEvent",
+        "isLiveBroadcast": true,
+        "startDate": "2026-02-18"
+      },
+      "potentialAction": {
+        "@type": "ViewAction",
+        "target": "https://wecam.live/"
+      }
+    }
+    </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Static fallback for SEO crawlers - React will replace this on mount -->
+      <div class="app">
+        <header class="site-header">
+          <h1>WeCam - Free Random Video Chat</h1>
+          <p class="site-description">
+            Meet strangers worldwide with free random video chat. No signup, no downloads — just click Start and connect instantly. The best Omegle alternative for anonymous video conversations.
+          </p>
+        </header>
+        <main class="main">
+          <div class="video-layout">
+            <section class="video-panel remote-panel">
+              <h2 class="sr-only">Partner Video</h2>
+              <div class="video-wrapper">
+                <div class="video-placeholder">
+                  <span class="status-text">Click Start to begin</span>
+                </div>
+              </div>
+              <div class="controls-wrapper">
+                <div class="controls">
+                  <button class="btn btn-start">Start</button>
+                </div>
+              </div>
+            </section>
+            <section class="video-panel local-panel">
+              <h2 class="sr-only">Your Camera</h2>
+              <div class="video-wrapper">
+                <div class="video-placeholder">
+                  <span class="status-text">Your camera</span>
+                </div>
+              </div>
+            </section>
+          </div>
+        </main>
+        <footer class="site-footer">
+          <nav aria-label="Footer navigation">
+            <span class="footer-brand">WeCam</span>
+            <span class="footer-sep">&mdash;</span>
+            <span>Free Omegle alternative for random video chat</span>
+          </nav>
+        </footer>
+      </div>
+    </div>
+    <noscript>
+      <div style="text-align: center; padding: 2rem; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #1a1a2e; color: #fff; min-height: 100vh;">
+        <h1>WeCam - Free Random Video Chat</h1>
+        <p>WeCam is a free Omegle alternative for random video chat with strangers worldwide.</p>
+        <p>Please enable JavaScript to use WeCam. You need a modern browser with JavaScript and WebRTC support for video chat.</p>
+        <h2>Frequently Asked Questions</h2>
+        <h3>What is WeCam?</h3>
+        <p>WeCam is a free random video chat platform that connects you with strangers worldwide. No signup or downloads required.</p>
+        <h3>Is WeCam free?</h3>
+        <p>Yes, WeCam is completely free with no hidden fees or subscriptions.</p>
+        <h3>What happened to Omegle?</h3>
+        <p>Omegle shut down in November 2023. WeCam is a modern alternative with the same random video chat experience.</p>
+      </div>
+    </noscript>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
