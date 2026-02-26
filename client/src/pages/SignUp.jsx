@@ -48,11 +48,11 @@ export default function SignUp() {
           <fieldset className="gender-fieldset">
             <legend>Gender</legend>
             <label>
-              <input type="radio" name="gender" value="male" checked={gender === 'male'} onChange={() => setGender('male')} />
+              <input type="radio" name="gender" value="male" required checked={gender === 'male'} onChange={() => setGender('male')} />
               Male
             </label>
             <label>
-              <input type="radio" name="gender" value="female" checked={gender === 'female'} onChange={() => setGender('female')} />
+              <input type="radio" name="gender" value="female" required checked={gender === 'female'} onChange={() => setGender('female')} />
               Female
             </label>
           </fieldset>
