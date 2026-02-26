@@ -2,6 +2,7 @@ import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
+import compression from 'compression';
 import matchmaker from './matchmaker.js';
 
 const app = express();
@@ -31,6 +32,7 @@ const io = new Server(server, {
   }
 });
 
+app.use(compression());
 app.use(cors({ origin: allowedOrigins }));
 
 // Health check endpoint

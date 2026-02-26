@@ -34,6 +34,12 @@
     <!-- Theme color for mobile browsers -->
     <meta name="theme-color" content="#000000" />
 
+    <!-- PWA manifest -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Google Search Console verification (replace with real code after deploy) -->
+    <meta name="google-site-verification" content="PLACEHOLDER_VERIFICATION_CODE" />
+
     <!-- Resource hints -->
     <link rel="preconnect" href="https://relay.metered.ca" />
     <link rel="dns-prefetch" href="https://relay.metered.ca" />
@@ -170,6 +176,16 @@
     <div id="root">
       <!-- Static fallback for SEO crawlers - React will replace this on mount -->
       <div class="app">
+        <nav class="site-nav" aria-label="Main navigation">
+          <div class="nav-inner">
+            <a href="/" class="nav-brand">WeCam</a>
+            <div class="nav-links">
+              <a href="/about">About</a>
+              <a href="/faq">FAQ</a>
+              <a href="/blog">Blog</a>
+            </div>
+          </div>
+        </nav>
         <header class="site-header">
           <h1>WeCam - Free Random Video Chat</h1>
           <p class="site-description">
@@ -203,9 +219,14 @@
         </main>
         <footer class="site-footer">
           <nav aria-label="Footer navigation">
-            <span class="footer-brand">WeCam</span>
-            <span class="footer-sep">&mdash;</span>
-            <span>Free Omegle alternative for random video chat</span>
+            <div class="footer-links">
+              <a href="/about">About</a>
+              <a href="/faq">FAQ</a>
+              <a href="/blog">Blog</a>
+              <a href="/privacy">Privacy Policy</a>
+              <a href="/terms">Terms of Service</a>
+            </div>
+            <p class="footer-copy">&copy; 2026 WeCam &mdash; Free Omegle alternative for random video chat</p>
           </nav>
         </footer>
       </div>
