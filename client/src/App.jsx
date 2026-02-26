@@ -14,6 +14,7 @@ const VideoSafety = lazy(() => import('./pages/blog/VideoSafety'));
 const WhatHappenedToOmegle = lazy(() => import('./pages/blog/WhatHappenedToOmegle'));
 const Login = lazy(() => import('./pages/Login'));
 const SignUp = lazy(() => import('./pages/SignUp'));
+const BuyTokens = lazy(() => import('./pages/BuyTokens'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
             <Route path="/blog/what-happened-to-omegle" element={<WhatHappenedToOmegle />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/buy-tokens" element={<BuyTokens />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

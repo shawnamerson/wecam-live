@@ -3,8 +3,10 @@ import { io } from 'socket.io-client';
 import { useWebRTC } from '../hooks/useWebRTC';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { useAuth } from '../contexts/AuthContext';
+import { useTokens } from '../contexts/TokenContext';
 import { VideoChat } from '../components/VideoChat';
 import { Controls } from '../components/Controls';
+import { GenderFilter } from '../components/GenderFilter';
 
 const SERVER_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:3001';
 
@@ -16,12 +18,14 @@ export default function Home() {
   });
 
   const { session, user } = useAuth();
+  const { refreshBalance } = useTokens();
   const lastUserIdRef = useRef(undefined);
 
   const [socket, setSocket] = useState(null);
   const [isStarted, setIsStarted] = useState(false);
   const [status, setStatus] = useState('Click Start to begin');
   const [userCount, setUserCount] = useState(0);
+  const [genderFilter, setGenderFilter] = useState(null);
 
   const {
     localStream,
@@ -82,6 +86,8 @@ export default function Home() {
       if (initiator) {
         await createOffer(partnerId);
       }
+      // Refresh balance after match if filter was active
+      if (genderFilter) refreshBalance();
     });
 
     socket.on('offer', async ({ offer, from }) => {
@@ -99,7 +105,17 @@ export default function Home() {
     socket.on('partner-left', () => {
       setStatus('Partner disconnected. Finding new partner...');
       closePeerConnection();
-      socket.emit('join');
+      socket.emit('join', { genderFilter });
+    });
+
+    socket.on('insufficient-tokens', () => {
+      setStatus('Not enough tokens. Buy tokens to use gender filter.');
+      closePeerConnection();
+      refreshBalance();
+    });
+
+    socket.on('filter-error', ({ message }) => {
+      setStatus(message);
     });
 
     return () => {
@@ -109,25 +125,27 @@ export default function Home() {
       socket.off('answer');
       socket.off('ice-candidate');
       socket.off('partner-left');
+      socket.off('insufficient-tokens');
+      socket.off('filter-error');
     };
-  }, [socket, createOffer, handleOffer, handleAnswer, handleIceCandidate, closePeerConnection]);
+  }, [socket, genderFilter, createOffer, handleOffer, handleAnswer, handleIceCandidate, closePeerConnection, refreshBalance]);
 
   const handleStart = useCallback(async () => {
     try {
       await startLocalStream();
       setIsStarted(true);
       setStatus('Waiting for a partner...');
-      socket?.emit('join');
+      socket?.emit('join', { genderFilter });
     } catch (err) {
       setStatus('Camera access denied. Please allow camera access.');
     }
-  }, [socket, startLocalStream]);
+  }, [socket, startLocalStream, genderFilter]);
 
   const handleNext = useCallback(() => {
     closePeerConnection();
     setStatus('Finding new partner...');
-    socket?.emit('next');
-  }, [socket, closePeerConnection]);
+    socket?.emit('next', { genderFilter });
+  }, [socket, closePeerConnection, genderFilter]);
 
   const handleStop = useCallback(() => {
     socket?.emit('stop');
@@ -164,13 +182,16 @@ export default function Home() {
           onSwitchCamera={handleSwitchCamera}
           canSwitchCamera={availableCameras.length > 1}
           controls={
-            <Controls
-              isStarted={isStarted}
-              isConnected={connectionState === 'connected'}
-              onStart={handleStart}
-              onNext={handleNext}
-              onStop={handleStop}
-            />
+            <>
+              <GenderFilter value={genderFilter} onChange={setGenderFilter} />
+              <Controls
+                isStarted={isStarted}
+                isConnected={connectionState === 'connected'}
+                onStart={handleStart}
+                onNext={handleNext}
+                onStop={handleStop}
+              />
+            </>
           }
         />
       </main>

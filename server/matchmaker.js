@@ -2,16 +2,23 @@
 
 class Matchmaker {
   constructor() {
-    this.waitingQueue = []; // { socketId, userInfo }
+    this.waitingQueue = []; // { socketId, userInfo, genderFilter }
     this.pairs = new Map(); // socketId -> partnerSocketId
-    this.userMeta = new Map(); // socketId -> userInfo
+    this.userMeta = new Map(); // socketId -> { userInfo, genderFilter }
+  }
+
+  // Two-way compatibility check
+  isCompatible(a, b) {
+    if (a.genderFilter && b.userInfo?.gender !== a.genderFilter) return false;
+    if (b.genderFilter && a.userInfo?.gender !== b.genderFilter) return false;
+    return true;
   }
 
   // Add user to waiting queue
-  addToQueue(socketId, userInfo) {
+  addToQueue(socketId, userInfo, genderFilter) {
     const inQueue = this.waitingQueue.some(entry => entry.socketId === socketId);
     if (!inQueue && !this.pairs.has(socketId)) {
-      this.waitingQueue.push({ socketId, userInfo: userInfo || null });
+      this.waitingQueue.push({ socketId, userInfo: userInfo || null, genderFilter: genderFilter || null });
     }
   }
 
@@ -24,28 +31,32 @@ class Matchmaker {
   }
 
   // Try to find a match for a user
-  findMatch(socketId, userInfo) {
+  findMatch(socketId, userInfo, genderFilter) {
     // Store user meta
-    if (userInfo) {
-      this.userMeta.set(socketId, userInfo);
-    }
+    this.userMeta.set(socketId, { userInfo: userInfo || null, genderFilter: genderFilter || null });
 
     // Remove self from queue if present
     this.removeFromQueue(socketId);
 
-    // Find first available user in queue
-    if (this.waitingQueue.length > 0) {
-      const partner = this.waitingQueue.shift();
+    const incoming = { socketId, userInfo: userInfo || null, genderFilter: genderFilter || null };
 
-      // Create the pair
-      this.pairs.set(socketId, partner.socketId);
-      this.pairs.set(partner.socketId, socketId);
+    // Scan queue for first compatible user
+    for (let i = 0; i < this.waitingQueue.length; i++) {
+      const candidate = this.waitingQueue[i];
+      if (this.isCompatible(incoming, candidate)) {
+        // Remove matched candidate from queue
+        this.waitingQueue.splice(i, 1);
 
-      return partner.socketId;
+        // Create the pair
+        this.pairs.set(socketId, candidate.socketId);
+        this.pairs.set(candidate.socketId, socketId);
+
+        return candidate.socketId;
+      }
     }
 
     // No match found, add to queue
-    this.addToQueue(socketId, userInfo);
+    this.addToQueue(socketId, userInfo, genderFilter);
     return null;
   }
 
