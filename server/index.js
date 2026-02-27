@@ -3,14 +3,11 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
 import compression from 'compression';
-import jwt from 'jsonwebtoken';
 import matchmaker from './matchmaker.js';
-import { authenticateSocket } from './auth.js';
+import { authenticateSocket, verifyToken } from './auth.js';
 import { TOKEN_PACKAGES, createPaymentIntent, handleWebhook, getTokenBalance, deductToken } from './stripe.js';
 
 const AUTH_REQUIRED = process.env.AUTH_REQUIRED === 'true';
-const jwtSecretRaw = process.env.SUPABASE_JWT_SECRET;
-const jwtSecret = jwtSecretRaw ? Buffer.from(jwtSecretRaw, 'base64') : null;
 
 const app = express();
 const server = createServer(app);
@@ -58,30 +55,20 @@ app.post('/api/stripe-webhook', express.raw({ type: 'application/json' }), async
 app.use(express.json());
 
 // Authenticate request via Authorization header (Bearer JWT)
-function authenticateRequest(req, res, next) {
+async function authenticateRequest(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader?.startsWith('Bearer ')) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
   const token = authHeader.slice(7);
-  if (!jwtSecret) {
-    return res.status(500).json({ error: 'Auth not configured' });
-  }
-
-  try {
-    // Debug: log token header and secret type
-    const [headerB64] = token.split('.');
-    const header = JSON.parse(Buffer.from(headerB64, 'base64').toString());
-    console.log('JWT header:', header);
-    console.log('Secret type:', typeof jwtSecret, Buffer.isBuffer(jwtSecret) ? `Buffer(${jwtSecret.length})` : '');
-    const payload = jwt.verify(token, jwtSecret, { algorithms: ['HS256'] });
-    req.userId = payload.sub;
-    next();
-  } catch (err) {
-    console.error('Auth failed:', err.message);
+  const user = await verifyToken(token);
+  if (!user) {
     return res.status(401).json({ error: 'Invalid token' });
   }
+
+  req.userId = user.id;
+  next();
 }
 
 // Health check endpoint
