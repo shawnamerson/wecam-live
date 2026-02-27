@@ -17,6 +17,8 @@ const SignUp = lazy(() => import('./pages/SignUp'));
 const BuyTokens = lazy(() => import('./pages/BuyTokens'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
+const showAuth = import.meta.env.VITE_SHOW_AUTH === 'true';
+
 function App() {
   return (
     <>
@@ -32,9 +34,9 @@ function App() {
             <Route path="/blog/best-omegle-alternatives-2026" element={<OmegleAlternatives />} />
             <Route path="/blog/video-chat-safety-tips" element={<VideoSafety />} />
             <Route path="/blog/what-happened-to-omegle" element={<WhatHappenedToOmegle />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/buy-tokens" element={<BuyTokens />} />
+            {showAuth && <Route path="/login" element={<Login />} />}
+            {showAuth && <Route path="/signup" element={<SignUp />} />}
+            {showAuth && <Route path="/buy-tokens" element={<BuyTokens />} />}
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

@@ -2,10 +2,14 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTokens } from '../contexts/TokenContext';
 
+const showAuth = import.meta.env.VITE_SHOW_AUTH === 'true';
+
 export function GenderFilter({ value, onChange }) {
   const { user } = useAuth();
   const { balance } = useTokens();
   const navigate = useNavigate();
+
+  if (!showAuth) return null;
 
   const handleClick = (gender) => {
     if (!user) {

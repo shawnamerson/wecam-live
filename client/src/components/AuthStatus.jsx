@@ -2,10 +2,13 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTokens } from '../contexts/TokenContext';
 
+const showAuth = import.meta.env.VITE_SHOW_AUTH === 'true';
+
 export function AuthStatus() {
   const { user, loading, signOut } = useAuth();
   const { balance } = useTokens();
 
+  if (!showAuth) return null;
   if (loading) return null;
 
   if (user) {
