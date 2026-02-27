@@ -23,7 +23,7 @@ export async function authenticateSocket(socket) {
   }
 
   try {
-    const payload = jwt.verify(token, jwtSecret);
+    const payload = jwt.verify(token, jwtSecret, { algorithms: ['HS256'] });
     const userId = payload.sub;
 
     const { data: profile } = await supabase

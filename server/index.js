@@ -69,7 +69,7 @@ function authenticateRequest(req, res, next) {
   }
 
   try {
-    const payload = jwt.verify(token, jwtSecret);
+    const payload = jwt.verify(token, jwtSecret, { algorithms: ['HS256'] });
     req.userId = payload.sub;
     next();
   } catch (err) {
