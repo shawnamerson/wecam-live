@@ -3,6 +3,8 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
 import compression from 'compression';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import matchmaker from './matchmaker.js';
 import { authenticateSocket, verifyToken } from './auth.js';
 import { TOKEN_PACKAGES, createPaymentIntent, handleWebhook, getTokenBalance, deductToken } from './stripe.js';
@@ -37,6 +39,7 @@ const io = new Server(server, {
 });
 
 app.use(compression());
+app.use(helmet());
 app.use(cors({ origin: allowedOrigins }));
 
 // Stripe webhook — must use raw body, before express.json()
@@ -53,6 +56,23 @@ app.post('/api/stripe-webhook', express.raw({ type: 'application/json' }), async
 
 // JSON parser for all other routes
 app.use(express.json());
+
+// Rate limiting
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use('/api/', apiLimiter);
+
+const paymentLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use('/api/create-payment-intent', paymentLimiter);
 
 // Authenticate request via Authorization header (Bearer JWT)
 async function authenticateRequest(req, res, next) {
@@ -136,7 +156,8 @@ io.on('connection', async (socket) => {
 
   // User wants to find a partner
   socket.on('join', async (options) => {
-    const genderFilter = options?.genderFilter || null;
+    const rawFilter = options?.genderFilter;
+    const genderFilter = (rawFilter === 'male' || rawFilter === 'female') ? rawFilter : null;
 
     // Validate: gender filter requires auth
     if (genderFilter && !userInfo) {
@@ -199,7 +220,8 @@ io.on('connection', async (socket) => {
 
   // User wants to skip to next partner
   socket.on('next', async (options) => {
-    const genderFilter = options?.genderFilter || null;
+    const rawFilter = options?.genderFilter;
+    const genderFilter = (rawFilter === 'male' || rawFilter === 'female') ? rawFilter : null;
 
     if (genderFilter && !userInfo) {
       socket.emit('filter-error', { message: 'Login required to use gender filter' });

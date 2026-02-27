@@ -1,27 +1,20 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 
 // ICE servers config - STUN for most users, TURN for users behind strict NATs
-const ICE_SERVERS = {
-  iceServers: [
-    { urls: 'stun:stun.l.google.com:19302' },
-    { urls: 'stun:stun1.l.google.com:19302' },
-    {
-      urls: 'turn:openrelay.metered.ca:80',
-      username: 'openrelayproject',
-      credential: 'openrelayproject'
-    },
-    {
-      urls: 'turn:openrelay.metered.ca:443',
-      username: 'openrelayproject',
-      credential: 'openrelayproject'
-    },
-    {
-      urls: 'turn:openrelay.metered.ca:443?transport=tcp',
-      username: 'openrelayproject',
-      credential: 'openrelayproject'
-    }
-  ]
-};
+const stunServers = [
+  { urls: 'stun:stun.l.google.com:19302' },
+  { urls: 'stun:stun1.l.google.com:19302' },
+];
+
+const turnUsername = import.meta.env.VITE_TURN_USERNAME;
+const turnCredential = import.meta.env.VITE_TURN_CREDENTIAL;
+const turnServers = (turnUsername && turnCredential) ? [
+  { urls: 'turn:openrelay.metered.ca:80', username: turnUsername, credential: turnCredential },
+  { urls: 'turn:openrelay.metered.ca:443', username: turnUsername, credential: turnCredential },
+  { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: turnUsername, credential: turnCredential },
+] : [];
+
+const ICE_SERVERS = { iceServers: [...stunServers, ...turnServers] };
 
 export function useWebRTC(socket) {
   const [localStream, setLocalStream] = useState(null);
