@@ -3,7 +3,8 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const jwtSecret = process.env.SUPABASE_JWT_SECRET;
+const jwtSecretRaw = process.env.SUPABASE_JWT_SECRET;
+const jwtSecret = jwtSecretRaw ? Buffer.from(jwtSecretRaw, 'base64') : null;
 
 const supabase = supabaseUrl && supabaseServiceKey
   ? createClient(supabaseUrl, supabaseServiceKey)

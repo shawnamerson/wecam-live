@@ -9,7 +9,8 @@ import { authenticateSocket } from './auth.js';
 import { TOKEN_PACKAGES, createPaymentIntent, handleWebhook, getTokenBalance, deductToken } from './stripe.js';
 
 const AUTH_REQUIRED = process.env.AUTH_REQUIRED === 'true';
-const jwtSecret = process.env.SUPABASE_JWT_SECRET;
+const jwtSecretRaw = process.env.SUPABASE_JWT_SECRET;
+const jwtSecret = jwtSecretRaw ? Buffer.from(jwtSecretRaw, 'base64') : null;
 
 const app = express();
 const server = createServer(app);
@@ -73,6 +74,7 @@ function authenticateRequest(req, res, next) {
     req.userId = payload.sub;
     next();
   } catch (err) {
+    console.error('Auth failed:', err.message);
     return res.status(401).json({ error: 'Invalid token' });
   }
 }
