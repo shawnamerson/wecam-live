@@ -70,6 +70,11 @@ function authenticateRequest(req, res, next) {
   }
 
   try {
+    // Debug: log token header and secret type
+    const [headerB64] = token.split('.');
+    const header = JSON.parse(Buffer.from(headerB64, 'base64').toString());
+    console.log('JWT header:', header);
+    console.log('Secret type:', typeof jwtSecret, Buffer.isBuffer(jwtSecret) ? `Buffer(${jwtSecret.length})` : '');
     const payload = jwt.verify(token, jwtSecret, { algorithms: ['HS256'] });
     req.userId = payload.sub;
     next();
