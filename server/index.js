@@ -9,6 +9,7 @@ import matchmaker from './matchmaker.js';
 import { authenticateSocket, verifyToken } from './auth.js';
 import { TOKEN_PACKAGES, createPaymentIntent, handleWebhook, getTokenBalance, deductToken } from './stripe.js';
 import { log } from './logger.js';
+import { supabase } from './supabase.js';
 
 const AUTH_REQUIRED = process.env.AUTH_REQUIRED === 'true';
 
@@ -92,9 +93,14 @@ async function authenticateRequest(req, res, next) {
   next();
 }
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', ...matchmaker.getStats() });
+// Health check endpoint — also pings Supabase to prevent free-tier pausing
+app.get('/health', async (req, res) => {
+  let db = 'not configured';
+  if (supabase) {
+    const { error } = await supabase.from('profiles').select('id', { count: 'exact', head: true });
+    db = error ? 'error' : 'ok';
+  }
+  res.json({ status: 'ok', db, ...matchmaker.getStats() });
 });
 
 // Token packages (public)

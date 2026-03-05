@@ -1,7 +1,11 @@
 {
   "buildCommand": "npm install --prefix client && npm run build --prefix client",
   "outputDirectory": "client/dist",
+  "crons": [
+    { "path": "/api/health", "schedule": "0 */3 * * *" }
+  ],
   "routes": [
+    { "src": "/api/health", "dest": "/api/health.js" },
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
