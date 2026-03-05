@@ -1,11 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-const supabase = supabaseUrl && supabaseServiceKey
-  ? createClient(supabaseUrl, supabaseServiceKey)
-  : null;
+import { supabase } from './supabase.js';
+import { log } from './logger.js';
 
 /**
  * Verify a JWT token via Supabase and return the user ID, or null on failure.
@@ -27,7 +21,7 @@ export async function authenticateSocket(socket) {
   if (!token) return null;
 
   if (!supabase) {
-    console.warn('Supabase not configured — skipping auth');
+    log.warn('Supabase not configured — skipping auth');
     return null;
   }
 
@@ -43,7 +37,7 @@ export async function authenticateSocket(socket) {
 
     return profile || { id: user.id, email: user.email || 'Unknown', gender: null };
   } catch (err) {
-    console.error('Auth failed:', err.message);
+    log.error('Auth failed:', err.message);
     return null;
   }
 }

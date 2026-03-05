@@ -1,14 +1,9 @@
 import Stripe from 'stripe';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from './supabase.js';
+import { log } from './logger.js';
 
 const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY)
-  : null;
-
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const supabase = supabaseUrl && supabaseServiceKey
-  ? createClient(supabaseUrl, supabaseServiceKey)
   : null;
 
 export const TOKEN_PACKAGES = [
@@ -51,8 +46,8 @@ export async function handleWebhook(rawBody, signature) {
         p_amount: tokenCount,
         p_stripe_pi: piId,
       });
-      if (error) console.error('Failed to credit tokens:', error);
-      else console.log(`Credited ${tokenCount} tokens to ${userId}`);
+      if (error) log.error('Failed to credit tokens:', error);
+      else log.info(`Credited ${tokenCount} tokens to ${userId}`);
     }
   }
 
@@ -76,7 +71,7 @@ export async function deductToken(userId, metadata = {}) {
     p_metadata: metadata,
   });
   if (error) {
-    console.error('deduct_token error:', error);
+    log.error('deduct_token error:', error);
     return false;
   }
   return data === true;

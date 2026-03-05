@@ -8,6 +8,7 @@ import rateLimit from 'express-rate-limit';
 import matchmaker from './matchmaker.js';
 import { authenticateSocket, verifyToken } from './auth.js';
 import { TOKEN_PACKAGES, createPaymentIntent, handleWebhook, getTokenBalance, deductToken } from './stripe.js';
+import { log } from './logger.js';
 
 const AUTH_REQUIRED = process.env.AUTH_REQUIRED === 'true';
 
@@ -49,7 +50,7 @@ app.post('/api/stripe-webhook', express.raw({ type: 'application/json' }), async
     const result = await handleWebhook(req.body, signature);
     res.json(result);
   } catch (err) {
-    console.error('Webhook error:', err.message);
+    log.error('Webhook error:', err.message);
     res.status(400).json({ error: err.message });
   }
 });
@@ -108,7 +109,7 @@ app.post('/api/create-payment-intent', authenticateRequest, async (req, res) => 
     const result = await createPaymentIntent(packageId, req.userId);
     res.json(result);
   } catch (err) {
-    console.error('PaymentIntent error:', err.message);
+    log.error('PaymentIntent error:', err.message);
     res.status(400).json({ error: err.message });
   }
 });
@@ -119,7 +120,7 @@ app.get('/api/token-balance', authenticateRequest, async (req, res) => {
     const balance = await getTokenBalance(req.userId);
     res.json({ balance });
   } catch (err) {
-    console.error('Balance error:', err.message);
+    log.error('Balance error:', err.message);
     res.status(500).json({ error: 'Failed to fetch balance' });
   }
 });
@@ -142,7 +143,7 @@ io.on('connection', async (socket) => {
   // Authenticate user (returns userInfo or null for anonymous)
   const userInfo = await authenticateSocket(socket);
   const displayName = userInfo?.email || 'Anonymous';
-  console.log(`User connected: ${socket.id} (${displayName})`);
+  log.info(`User connected: ${socket.id} (${displayName})`);
 
   // If auth is required and user is not authenticated, disconnect
   if (AUTH_REQUIRED && !userInfo) {
@@ -165,7 +166,7 @@ io.on('connection', async (socket) => {
       return;
     }
 
-    console.log(`User ${socket.id} joining queue${genderFilter ? ` (filter: ${genderFilter})` : ''}`);
+    log.info(`User ${socket.id} joining queue${genderFilter ? ` (filter: ${genderFilter})` : ''}`);
     const partnerId = matchmaker.findMatch(socket.id, userInfo, genderFilter);
 
     if (partnerId) {
@@ -191,25 +192,25 @@ io.on('connection', async (socket) => {
         return;
       }
 
-      console.log(`Matched: ${socket.id} <-> ${partnerId}`);
+      log.info(`Matched: ${socket.id} <-> ${partnerId}`);
       // Notify both users they're matched
       socket.emit('matched', { partnerId, initiator: true });
       io.to(partnerId).emit('matched', { partnerId: socket.id, initiator: false });
     } else {
       socket.emit('waiting');
-      console.log(`User ${socket.id} waiting for partner`);
+      log.info(`User ${socket.id} waiting for partner`);
     }
   });
 
   // WebRTC signaling: offer
   socket.on('offer', ({ offer, to }) => {
-    console.log(`Offer from ${socket.id} to ${to}`);
+    log.info(`Offer from ${socket.id} to ${to}`);
     io.to(to).emit('offer', { offer, from: socket.id });
   });
 
   // WebRTC signaling: answer
   socket.on('answer', ({ answer, to }) => {
-    console.log(`Answer from ${socket.id} to ${to}`);
+    log.info(`Answer from ${socket.id} to ${to}`);
     io.to(to).emit('answer', { answer, from: socket.id });
   });
 
@@ -228,7 +229,7 @@ io.on('connection', async (socket) => {
       return;
     }
 
-    console.log(`User ${socket.id} wants next partner`);
+    log.info(`User ${socket.id} wants next partner`);
     const oldPartnerId = matchmaker.removeUser(socket.id);
 
     if (oldPartnerId) {
@@ -259,7 +260,7 @@ io.on('connection', async (socket) => {
         return;
       }
 
-      console.log(`New match: ${socket.id} <-> ${newPartnerId}`);
+      log.info(`New match: ${socket.id} <-> ${newPartnerId}`);
       socket.emit('matched', { partnerId: newPartnerId, initiator: true });
       io.to(newPartnerId).emit('matched', { partnerId: socket.id, initiator: false });
     } else {
@@ -269,7 +270,7 @@ io.on('connection', async (socket) => {
 
   // User stops/leaves
   socket.on('stop', () => {
-    console.log(`User ${socket.id} stopped`);
+    log.info(`User ${socket.id} stopped`);
     const partnerId = matchmaker.removeUser(socket.id);
     if (partnerId) {
       io.to(partnerId).emit('partner-left');
@@ -278,7 +279,7 @@ io.on('connection', async (socket) => {
 
   // Handle disconnect
   socket.on('disconnect', () => {
-    console.log(`User disconnected: ${socket.id}`);
+    log.info(`User disconnected: ${socket.id}`);
     const partnerId = matchmaker.removeUser(socket.id);
     if (partnerId) {
       io.to(partnerId).emit('partner-left');
@@ -290,5 +291,5 @@ io.on('connection', async (socket) => {
 
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
-  console.log(`Signaling server running on port ${PORT}`);
+  log.info(`Signaling server running on port ${PORT}`);
 });

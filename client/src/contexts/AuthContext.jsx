@@ -1,34 +1,29 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 
 const AuthContext = createContext(null);
+
+const noopAuth = { session: null, user: null, profile: null, loading: false, signUp: () => {}, signIn: () => {}, signOut: () => {} };
 
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null);
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!!supabase);
 
-  // If Supabase is not configured, skip auth entirely
-  if (!supabase) {
-    return (
-      <AuthContext.Provider value={{ session: null, user: null, profile: null, loading: false, signUp: () => {}, signIn: () => {}, signOut: () => {} }}>
-        {children}
-      </AuthContext.Provider>
-    );
-  }
-
-  async function fetchProfile(userId) {
+  const fetchProfile = useCallback(async (userId) => {
+    if (!supabase) return null;
     const { data } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', userId)
       .single();
     return data;
-  }
+  }, []);
 
   useEffect(() => {
-    // Get initial session
+    if (!supabase) return;
+
     supabase.auth.getSession().then(({ data: { session: s } }) => {
       setSession(s);
       setUser(s?.user ?? null);
@@ -38,7 +33,6 @@ export function AuthProvider({ children }) {
       setLoading(false);
     });
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, s) => {
       setSession(s);
       setUser(s?.user ?? null);
@@ -50,13 +44,13 @@ export function AuthProvider({ children }) {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [fetchProfile]);
 
-  async function signUp(email, password, gender) {
+  const signUp = useCallback(async (email, password, gender) => {
+    if (!supabase) return { error: { message: 'Auth not configured' } };
     const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) return { error };
 
-    // Insert profile with gender
     if (data.user) {
       const { error: profileError } = await supabase
         .from('profiles')
@@ -65,16 +59,26 @@ export function AuthProvider({ children }) {
     }
 
     return { data };
-  }
+  }, []);
 
-  async function signIn(email, password) {
+  const signIn = useCallback(async (email, password) => {
+    if (!supabase) return { error: { message: 'Auth not configured' } };
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     return { data, error };
-  }
+  }, []);
 
-  async function signOut() {
+  const signOut = useCallback(async () => {
+    if (!supabase) return;
     await supabase.auth.signOut();
     setProfile(null);
+  }, []);
+
+  if (!supabase) {
+    return (
+      <AuthContext.Provider value={noopAuth}>
+        {children}
+      </AuthContext.Provider>
+    );
   }
 
   return (

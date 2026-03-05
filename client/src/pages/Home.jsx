@@ -26,6 +26,11 @@ export default function Home() {
   const [status, setStatus] = useState('Click Start to begin');
   const [userCount, setUserCount] = useState(0);
   const [genderFilter, setGenderFilter] = useState(null);
+  const [isMatched, setIsMatched] = useState(false);
+  const genderFilterRef = useRef(genderFilter);
+  genderFilterRef.current = genderFilter;
+  const isStartedRef = useRef(isStarted);
+  isStartedRef.current = isStarted;
 
   const {
     localStream,
@@ -73,21 +78,22 @@ export default function Home() {
     };
   }, [currentUserId]);
 
-  // Set up socket event listeners
+  // Set up socket event listeners (uses refs to avoid stale closures)
   useEffect(() => {
     if (!socket) return;
 
     socket.on('waiting', () => {
       setStatus('Waiting for a partner...');
+      setIsMatched(false);
     });
 
     socket.on('matched', async ({ partnerId, initiator }) => {
       setStatus('Connected! Say hi!');
+      setIsMatched(true);
       if (initiator) {
         await createOffer(partnerId);
       }
-      // Refresh balance after match if filter was active
-      if (genderFilter) refreshBalance();
+      if (genderFilterRef.current) refreshBalance();
     });
 
     socket.on('offer', async ({ offer, from }) => {
@@ -104,18 +110,30 @@ export default function Home() {
 
     socket.on('partner-left', () => {
       setStatus('Partner disconnected. Finding new partner...');
+      setIsMatched(false);
       closePeerConnection();
-      socket.emit('join', { genderFilter });
+      socket.emit('join', { genderFilter: genderFilterRef.current });
     });
 
     socket.on('insufficient-tokens', () => {
       setStatus('Not enough tokens. Buy tokens to use gender filter.');
+      setIsMatched(false);
       closePeerConnection();
       refreshBalance();
     });
 
     socket.on('filter-error', ({ message }) => {
       setStatus(message);
+    });
+
+    // Rejoin queue on reconnect if chat was started
+    socket.io.on('reconnect', () => {
+      if (isStartedRef.current) {
+        setStatus('Reconnected. Finding a partner...');
+        setIsMatched(false);
+        closePeerConnection();
+        socket.emit('join', { genderFilter: genderFilterRef.current });
+      }
     });
 
     return () => {
@@ -127,8 +145,9 @@ export default function Home() {
       socket.off('partner-left');
       socket.off('insufficient-tokens');
       socket.off('filter-error');
+      socket.io.off('reconnect');
     };
-  }, [socket, genderFilter, createOffer, handleOffer, handleAnswer, handleIceCandidate, closePeerConnection, refreshBalance]);
+  }, [socket, createOffer, handleOffer, handleAnswer, handleIceCandidate, closePeerConnection, refreshBalance]);
 
   const handleStart = useCallback(async () => {
     try {
@@ -143,6 +162,7 @@ export default function Home() {
 
   const handleNext = useCallback(() => {
     closePeerConnection();
+    setIsMatched(false);
     setStatus('Finding new partner...');
     socket?.emit('next', { genderFilter });
   }, [socket, closePeerConnection, genderFilter]);
@@ -152,6 +172,7 @@ export default function Home() {
     closePeerConnection();
     stopLocalStream();
     setIsStarted(false);
+    setIsMatched(false);
     setStatus('Click Start to begin');
   }, [socket, closePeerConnection, stopLocalStream]);
 
@@ -187,6 +208,7 @@ export default function Home() {
               <Controls
                 isStarted={isStarted}
                 isConnected={connectionState === 'connected'}
+                isMatched={isMatched}
                 onStart={handleStart}
                 onNext={handleNext}
                 onStop={handleStop}

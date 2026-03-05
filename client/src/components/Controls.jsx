@@ -1,4 +1,4 @@
-export function Controls({ isStarted, isConnected, onStart, onNext, onStop }) {
+export function Controls({ isStarted, isConnected, isMatched, onStart, onNext, onStop }) {
   return (
     <div className="controls">
       {!isStarted ? (
@@ -10,7 +10,7 @@ export function Controls({ isStarted, isConnected, onStart, onNext, onStop }) {
           <button
             className="btn btn-next"
             onClick={onNext}
-            disabled={!isConnected}
+            disabled={!isMatched}
             aria-label="Skip to next person"
           >
             Next
