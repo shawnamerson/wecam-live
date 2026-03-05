@@ -3,8 +3,8 @@ import { usePageMeta } from '../hooks/usePageMeta';
 
 export default function Privacy() {
   usePageMeta({
-    title: 'Privacy Policy',
-    description: 'WeCam privacy policy. Learn how we protect your privacy with peer-to-peer video chat — no accounts, no data collection, no tracking.',
+    title: 'Privacy Policy - Safe Anonymous Video Chat',
+    description: 'WeCam privacy policy. Learn how we keep your anonymous video chat safe with peer-to-peer connections — no accounts, no data collection, no tracking.',
     path: '/privacy'
   });
 

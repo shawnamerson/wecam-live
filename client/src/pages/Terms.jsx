@@ -4,7 +4,7 @@ import { usePageMeta } from '../hooks/usePageMeta';
 export default function Terms() {
   usePageMeta({
     title: 'Terms of Service',
-    description: 'WeCam terms of service. Read the rules and guidelines for using our free random video chat platform.',
+    description: 'WeCam terms of service. Rules and guidelines for using our free Omegle alternative and random video chat platform to talk to strangers.',
     path: '/terms'
   });
 

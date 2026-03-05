@@ -3,22 +3,23 @@ import { usePageMeta } from '../hooks/usePageMeta';
 
 export default function About() {
   usePageMeta({
-    title: 'About WeCam',
-    description: 'Learn about WeCam, the free Omegle alternative for random video chat. Discover how WeCam connects strangers worldwide with no signup required.',
+    title: 'About WeCam - Free Omegle Alternative to Talk to Strangers',
+    description: 'WeCam is a free random video chat site where you can talk to strangers anonymously. No signup, no download — the best Omegle alternative and chat roulette platform.',
     path: '/about'
   });
 
   return (
     <main className="content-page">
       <article className="content-container">
-        <h1>About WeCam</h1>
+        <h1>About WeCam - Talk to Strangers with Free Video Chat</h1>
 
         <section>
           <h2>What Is WeCam?</h2>
           <p>
-            WeCam is a free random video chat platform that connects you with strangers from around the world.
-            Think of it as the modern successor to Omegle — simple, anonymous, and instant. No accounts, no
-            downloads, no fees. Just open your browser, click Start, and you're face-to-face with someone new.
+            WeCam is a free random video chat platform that lets you talk to strangers from around the world.
+            Think of it as the modern successor to Omegle and a safe chat roulette alternative — simple, anonymous,
+            and instant. No accounts, no downloads, no fees. Just open your browser, click Start, and you're
+            face-to-face with someone new.
           </p>
         </section>
 
@@ -39,21 +40,22 @@ export default function About() {
         <section>
           <h2>Why WeCam?</h2>
           <ul>
-            <li><strong>100% Free</strong> — No premium tiers, no hidden costs, no subscriptions.</li>
-            <li><strong>No Signup</strong> — Start chatting in seconds without creating an account.</li>
-            <li><strong>No Downloads</strong> — Works entirely in your web browser on any device.</li>
-            <li><strong>Privacy First</strong> — Peer-to-peer connections mean your video never touches our servers.</li>
-            <li><strong>Global Community</strong> — Meet people from every corner of the world.</li>
+            <li><strong>100% Free</strong> — No premium tiers, no hidden costs, no subscriptions. Free video chat with strangers.</li>
+            <li><strong>No Signup Required</strong> — Talk to strangers in seconds without creating an account.</li>
+            <li><strong>No Download Needed</strong> — Works entirely in your web browser on any device.</li>
+            <li><strong>Safe &amp; Anonymous</strong> — Peer-to-peer connections mean your video never touches our servers.</li>
+            <li><strong>Global Community</strong> — Meet strangers online from every corner of the world.</li>
             <li><strong>Mobile Friendly</strong> — Full camera switching support on phones and tablets.</li>
           </ul>
         </section>
 
         <section>
-          <h2>Our Mission</h2>
+          <h2>Our Mission: The Best Omegle Replacement</h2>
           <p>
             After Omegle shut down in November 2023, millions of people lost their go-to platform for
-            spontaneous video conversations with strangers. WeCam was built to fill that gap — providing
-            the same simple, anonymous video chat experience with a modern, clean interface.
+            talking to strangers via video chat. WeCam was built to fill that gap — providing the same
+            simple, anonymous video chat experience with a modern, clean interface. Whether you called it
+            chat roulette or just "sites like Omegle," WeCam is the replacement you've been looking for.
           </p>
           <p>
             We believe that connecting with people from different backgrounds and cultures makes the world

@@ -3,15 +3,15 @@ import { usePageMeta } from '../hooks/usePageMeta';
 
 export default function FAQ() {
   usePageMeta({
-    title: 'FAQ',
-    description: 'Frequently asked questions about WeCam, the free Omegle alternative. Learn about features, safety, privacy, and how to get started with random video chat.',
+    title: 'FAQ - Random Video Chat & Talk to Strangers',
+    description: 'Frequently asked questions about WeCam, the best free Omegle alternative. Learn how to talk to strangers safely, use gender filters, and get started with random video chat.',
     path: '/faq'
   });
 
   const faqs = [
     {
       q: 'What is WeCam?',
-      a: 'WeCam is a free random video chat platform and the best Omegle alternative. It connects you with strangers worldwide for instant face-to-face conversations, with no signup or downloads required.'
+      a: 'WeCam is a free random video chat platform and the best Omegle alternative. Talk to strangers worldwide with anonymous video chat — like chat roulette but safer. No signup, no download required.'
     },
     {
       q: 'Is WeCam free to use?',
@@ -27,7 +27,7 @@ export default function FAQ() {
     },
     {
       q: 'What happened to Omegle?',
-      a: 'Omegle shut down in November 2023 after 14 years of operation. WeCam is a modern alternative that provides the same random video chat experience with a clean interface, no downloads, and instant connections.'
+      a: 'Omegle shut down in November 2023 after 14 years of operation. WeCam is the best Omegle replacement, providing the same random video chat and talk-to-strangers experience with a modern interface, no download, and instant connections.'
     },
     {
       q: 'What do I need to use WeCam?',
@@ -54,7 +54,7 @@ export default function FAQ() {
   return (
     <main className="content-page">
       <article className="content-container">
-        <h1>Frequently Asked Questions</h1>
+        <h1>Frequently Asked Questions About WeCam Video Chat</h1>
 
         <div className="faq-list">
           {faqs.map((faq, i) => (

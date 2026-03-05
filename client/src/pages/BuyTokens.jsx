@@ -55,7 +55,7 @@ function CheckoutForm({ onSuccess }) {
 }
 
 export default function BuyTokens() {
-  usePageMeta({ title: 'Buy Tokens - WeCam', description: 'Purchase tokens for gender-filtered matching on WeCam.', path: '/buy-tokens' });
+  usePageMeta({ title: 'Buy Tokens - Gender Filter for Video Chat', description: 'Purchase tokens to use gender filters on WeCam. Choose who you talk to with filtered random video chat matching.', path: '/buy-tokens' });
 
   const { session, user } = useAuth();
   const { balance, refreshBalance } = useTokens();

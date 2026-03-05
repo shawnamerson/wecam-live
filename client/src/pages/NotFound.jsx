@@ -4,7 +4,7 @@ import { usePageMeta } from '../hooks/usePageMeta';
 export default function NotFound() {
   usePageMeta({
     title: 'Page Not Found',
-    description: 'The page you are looking for does not exist. Return to WeCam to start a free random video chat.',
+    description: 'Page not found. Return to WeCam to talk to strangers with free random video chat — the best Omegle alternative.',
     path: '/404'
   });
 

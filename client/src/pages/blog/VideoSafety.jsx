@@ -3,8 +3,8 @@ import { usePageMeta } from '../../hooks/usePageMeta';
 
 export default function VideoSafety() {
   usePageMeta({
-    title: 'How to Stay Safe on Random Video Chat',
-    description: 'Essential safety tips for random video chat platforms. Learn how to protect your privacy, avoid scams, and have a positive experience on sites like WeCam.',
+    title: 'How to Stay Safe Talking to Strangers on Random Video Chat',
+    description: 'Essential safety tips for random video chat and talking to strangers online. Learn how to protect your privacy on Omegle alternatives, chat roulette sites, and platforms like WeCam.',
     path: '/blog/video-chat-safety-tips'
   });
 
@@ -12,7 +12,7 @@ export default function VideoSafety() {
     <main className="content-page">
       <article className="content-container blog-article">
         <header className="blog-header">
-          <h1>How to Stay Safe on Random Video Chat</h1>
+          <h1>How to Stay Safe Talking to Strangers on Random Video Chat</h1>
           <time dateTime="2026-02-22">February 22, 2026</time>
         </header>
 

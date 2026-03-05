@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { usePageMeta } from '../hooks/usePageMeta';
 
 export default function Login() {
-  usePageMeta({ title: 'Login - WeCam', description: 'Sign in to your WeCam account.', path: '/login' });
+  usePageMeta({ title: 'Log In', description: 'Sign in to your WeCam account to use gender filters and talk to strangers with random video chat.', path: '/login' });
 
   const { signIn } = useAuth();
   const navigate = useNavigate();

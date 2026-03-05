@@ -25,7 +25,7 @@ export function Layout() {
             <Link to="/privacy">Privacy Policy</Link>
             <Link to="/terms">Terms of Service</Link>
           </div>
-          <p className="footer-copy">&copy; {new Date().getFullYear()} WeCam &mdash; Free Omegle alternative for random video chat</p>
+          <p className="footer-copy">&copy; {new Date().getFullYear()} WeCam &mdash; Talk to strangers with free random video chat. The best Omegle alternative &amp; chat roulette site.</p>
         </nav>
       </footer>
     </div>

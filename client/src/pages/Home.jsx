@@ -12,8 +12,8 @@ const SERVER_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:3001';
 
 export default function Home() {
   usePageMeta({
-    title: 'WeCam - Free Omegle Alternative | Random Video Chat with Strangers',
-    description: 'WeCam is the best free Omegle alternative for random video chat. Meet strangers instantly, no signup required. Chat with people worldwide in seconds.',
+    title: 'WeCam - Talk to Strangers | Free Omegle Alternative & Random Video Chat',
+    description: 'WeCam is the #1 free Omegle alternative. Talk to strangers with random video chat — no signup, no download. Meet new people instantly on the best chat roulette site in 2026.',
     path: '/'
   });
 
@@ -187,10 +187,10 @@ export default function Home() {
   return (
     <>
       <header className="site-header">
-        <h1>WeCam - Free Random Video Chat</h1>
+        <h1>WeCam - Talk to Strangers with Free Random Video Chat</h1>
         {!isStarted && (
           <p className="site-description">
-            Meet strangers worldwide with free random video chat. No signup, no downloads — just click Start and connect instantly. The best Omegle alternative for anonymous video conversations.
+            The best free Omegle alternative and chat roulette site. Talk to strangers worldwide with anonymous video chat — no signup, no download. Just click Start and meet new people instantly.
           </p>
         )}
       </header>

@@ -3,8 +3,8 @@ import { usePageMeta } from '../../hooks/usePageMeta';
 
 export default function WhatHappenedToOmegle() {
   usePageMeta({
-    title: 'What Happened to Omegle?',
-    description: 'The full story of why Omegle shut down in November 2023 after 14 years. Learn what happened, why it closed, and where Omegle users are going now.',
+    title: 'What Happened to Omegle? Why It Shut Down & Best Alternatives',
+    description: 'The full story of why Omegle shut down in November 2023. Learn what happened, why it closed, and where to talk to strangers now — the best Omegle alternatives and sites like Omegle in 2026.',
     path: '/blog/what-happened-to-omegle'
   });
 
@@ -12,7 +12,7 @@ export default function WhatHappenedToOmegle() {
     <main className="content-page">
       <article className="content-container blog-article">
         <header className="blog-header">
-          <h1>What Happened to Omegle?</h1>
+          <h1>What Happened to Omegle? Why It Shut Down &amp; Where to Chat Now</h1>
           <time dateTime="2026-02-20">February 20, 2026</time>
         </header>
 
