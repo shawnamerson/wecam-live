@@ -3,7 +3,7 @@ import { usePageMeta } from '../../hooks/usePageMeta';
 
 export default function WhatHappenedToOmegle() {
   usePageMeta({
-    title: 'What Happened to Omegle? Why It Shut Down & Best Alternatives',
+    title: 'What Happened to Omegle? Why It Shut Down',
     description: 'The full story of why Omegle shut down in November 2023. Learn what happened, why it closed, and where to talk to strangers now — the best Omegle alternatives and sites like Omegle in 2026.',
     path: '/blog/what-happened-to-omegle'
   });

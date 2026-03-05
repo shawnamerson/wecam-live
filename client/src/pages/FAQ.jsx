@@ -3,7 +3,7 @@ import { usePageMeta } from '../hooks/usePageMeta';
 
 export default function FAQ() {
   usePageMeta({
-    title: 'FAQ - Random Video Chat & Talk to Strangers',
+    title: 'FAQ - Random Video Chat Questions',
     description: 'Frequently asked questions about WeCam, the best free Omegle alternative. Learn how to talk to strangers safely, use gender filters, and get started with random video chat.',
     path: '/faq'
   });

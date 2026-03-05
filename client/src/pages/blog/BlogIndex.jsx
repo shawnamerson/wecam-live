@@ -24,7 +24,7 @@ const posts = [
 
 export default function BlogIndex() {
   usePageMeta({
-    title: 'Blog - Random Video Chat Tips, Omegle Alternatives & More',
+    title: 'Blog - Video Chat Tips & Omegle Alternatives',
     description: 'WeCam blog — articles about random video chat, sites like Omegle, online safety tips for talking to strangers, and the future of anonymous video chat.',
     path: '/blog'
   });

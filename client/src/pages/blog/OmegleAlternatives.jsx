@@ -3,7 +3,7 @@ import { usePageMeta } from '../../hooks/usePageMeta';
 
 export default function OmegleAlternatives() {
   usePageMeta({
-    title: 'Best Omegle Alternatives in 2026 - Sites Like Omegle to Talk to Strangers',
+    title: 'Best Omegle Alternatives 2026 - Sites Like Omegle',
     description: 'Looking for sites like Omegle in 2026? Compare the best free Omegle alternatives for random video chat — WeCam, Chatroulette, OmeTV, and more chat roulette platforms to talk to strangers.',
     path: '/blog/best-omegle-alternatives-2026'
   });

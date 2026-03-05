@@ -3,7 +3,7 @@ import { usePageMeta } from '../hooks/usePageMeta';
 
 export default function About() {
   usePageMeta({
-    title: 'About WeCam - Free Omegle Alternative to Talk to Strangers',
+    title: 'About WeCam - Free Omegle Alternative',
     description: 'WeCam is a free random video chat site where you can talk to strangers anonymously. No signup, no download — the best Omegle alternative and chat roulette platform.',
     path: '/about'
   });

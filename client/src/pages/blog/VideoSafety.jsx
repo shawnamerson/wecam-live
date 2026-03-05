@@ -3,7 +3,7 @@ import { usePageMeta } from '../../hooks/usePageMeta';
 
 export default function VideoSafety() {
   usePageMeta({
-    title: 'How to Stay Safe Talking to Strangers on Random Video Chat',
+    title: 'Video Chat Safety Tips for Talking to Strangers',
     description: 'Essential safety tips for random video chat and talking to strangers online. Learn how to protect your privacy on Omegle alternatives, chat roulette sites, and platforms like WeCam.',
     path: '/blog/video-chat-safety-tips'
   });
