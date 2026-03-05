@@ -12,6 +12,11 @@ const BlogIndex = lazy(() => import('./pages/blog/BlogIndex'));
 const OmegleAlternatives = lazy(() => import('./pages/blog/OmegleAlternatives'));
 const VideoSafety = lazy(() => import('./pages/blog/VideoSafety'));
 const WhatHappenedToOmegle = lazy(() => import('./pages/blog/WhatHappenedToOmegle'));
+const VideoChatNoSignup = lazy(() => import('./pages/blog/VideoChatNoSignup'));
+const IsRandomVideoChatSafe = lazy(() => import('./pages/blog/IsRandomVideoChatSafe'));
+const MeetPeopleOnline = lazy(() => import('./pages/blog/MeetPeopleOnline'));
+const OmegleShutDownAlternatives = lazy(() => import('./pages/blog/OmegleShutDownAlternatives'));
+const ChatRouletteVsOmegle = lazy(() => import('./pages/blog/ChatRouletteVsOmegle'));
 const Login = lazy(() => import('./pages/Login'));
 const SignUp = lazy(() => import('./pages/SignUp'));
 const BuyTokens = lazy(() => import('./pages/BuyTokens'));
@@ -34,6 +39,11 @@ function App() {
             <Route path="/blog/best-omegle-alternatives-2026" element={<OmegleAlternatives />} />
             <Route path="/blog/video-chat-safety-tips" element={<VideoSafety />} />
             <Route path="/blog/what-happened-to-omegle" element={<WhatHappenedToOmegle />} />
+            <Route path="/blog/video-chat-without-signing-up" element={<VideoChatNoSignup />} />
+            <Route path="/blog/is-random-video-chat-safe" element={<IsRandomVideoChatSafe />} />
+            <Route path="/blog/how-to-meet-people-online-for-free" element={<MeetPeopleOnline />} />
+            <Route path="/blog/omegle-shut-down-what-to-use" element={<OmegleShutDownAlternatives />} />
+            <Route path="/blog/chat-roulette-vs-omegle-alternatives" element={<ChatRouletteVsOmegle />} />
             {showAuth && <Route path="/login" element={<Login />} />}
             {showAuth && <Route path="/signup" element={<SignUp />} />}
             {showAuth && <Route path="/buy-tokens" element={<BuyTokens />} />}

@@ -120,6 +120,74 @@ const ROUTES = [
       </article></main>`,
   },
   {
+    path: '/blog/video-chat-without-signing-up',
+    title: 'Video Chat Without Signing Up - Free & Anonymous',
+    description: 'Discover the best free video chat platforms that require no signup, no registration, and no account. Start anonymous video chat instantly with strangers on WeCam.',
+    body: `
+      <header class="site-header"><h1>Video Chat Without Signing Up: The Best Free Options</h1></header>
+      <main class="content-page"><article class="content-container">
+        <p>Looking for video chat with no signup required? Many people want to talk to strangers online without creating an account. Here are the best platforms for anonymous video chat with no registration.</p>
+        <h2>Why No-Signup Video Chat Matters</h2>
+        <p>Privacy, speed, and convenience. No email, no password, no personal data at risk.</p>
+        <h2>Best No-Signup Video Chat Platforms</h2>
+        <p>WeCam is the top choice — free, anonymous, no download or signup. Just click Start and talk to strangers instantly via WebRTC peer-to-peer connections.</p>
+      </article></main>`,
+  },
+  {
+    path: '/blog/is-random-video-chat-safe',
+    title: 'Is Random Video Chat Safe? What You Need to Know',
+    description: 'Is random video chat safe? Learn about the real risks of talking to strangers online, how to protect yourself, and what makes platforms like WeCam safer.',
+    body: `
+      <header class="site-header"><h1>Is Random Video Chat Safe? A Complete Guide</h1></header>
+      <main class="content-page"><article class="content-container">
+        <p>Is random video chat safe? The short answer: it can be, if you use the right platform and follow basic precautions. Here's what you need to know about safe video chat with strangers.</p>
+        <h2>The Real Risks</h2>
+        <p>Privacy exposure, inappropriate content, scams, and data collection are the main concerns.</p>
+        <h2>What Makes a Platform Safe</h2>
+        <p>Peer-to-peer WebRTC connections, no data collection, no signup required, and an instant skip button. WeCam is built with all of these safety features.</p>
+      </article></main>`,
+  },
+  {
+    path: '/blog/how-to-meet-people-online-for-free',
+    title: 'How to Meet People Online for Free in 2026',
+    description: 'The best ways to meet people online for free in 2026. From random video chat to social apps and forums, discover how to talk to strangers and make new connections.',
+    body: `
+      <header class="site-header"><h1>How to Meet People Online for Free: Best Ways in 2026</h1></header>
+      <main class="content-page"><article class="content-container">
+        <p>Want to meet new people online without spending money? From random video chat to forums and social apps, here are the best free ways to connect with strangers in 2026.</p>
+        <h2>Random Video Chat</h2>
+        <p>The most direct way to meet strangers online. Platforms like WeCam connect you face-to-face instantly — no signup, no fees.</p>
+        <h2>Why Video Chat Beats Text</h2>
+        <p>Face-to-face conversations build real connections faster than text-based alternatives.</p>
+      </article></main>`,
+  },
+  {
+    path: '/blog/omegle-shut-down-what-to-use',
+    title: 'Omegle Shut Down — What to Use Instead in 2026',
+    description: 'Omegle shut down in November 2023. Here are the best Omegle replacements for free random video chat with strangers in 2026.',
+    body: `
+      <header class="site-header"><h1>Omegle Shut Down: What to Use Now for Random Video Chat</h1></header>
+      <main class="content-page"><article class="content-container">
+        <p>Omegle shut down in November 2023 and is not coming back. If you're looking for an Omegle replacement, here are the best alternatives for random video chat with strangers in 2026.</p>
+        <h2>Best Omegle Replacement: WeCam</h2>
+        <p>WeCam offers the closest experience to original Omegle — free, anonymous, no signup required. Just click Start and talk to strangers instantly.</p>
+      </article></main>`,
+  },
+  {
+    path: '/blog/chat-roulette-vs-omegle-alternatives',
+    title: 'Chat Roulette vs Omegle Alternatives Compared',
+    description: 'Chat Roulette vs Omegle — how do these random video chat concepts compare in 2026? Features, history, and modern alternatives compared.',
+    body: `
+      <header class="site-header"><h1>Chat Roulette vs Omegle Alternatives: Which Is Best?</h1></header>
+      <main class="content-page"><article class="content-container">
+        <p>Chat Roulette and Omegle both pioneered random video chat with strangers. How do they compare, and what are the best alternatives in 2026?</p>
+        <h2>The History</h2>
+        <p>Omegle launched in 2009 for text chat, adding video in 2010. Chatroulette launched in 2009 with video-first roulette-style matching.</p>
+        <h2>Best Modern Alternative: WeCam</h2>
+        <p>WeCam combines the best of both — free random video chat with instant matching, no signup, and features like gender filters and mobile camera switching.</p>
+      </article></main>`,
+  },
+  {
     path: '/blog/what-happened-to-omegle',
     title: 'What Happened to Omegle? Why It Shut Down',
     description: 'The full story of why Omegle shut down in November 2023. Learn what happened, why it closed, and where to talk to strangers now — the best Omegle alternatives and sites like Omegle in 2026.',
